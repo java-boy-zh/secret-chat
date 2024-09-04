@@ -1,9 +1,14 @@
 server:
-  port: 55
   tomcat:
     uri-encoding: UTF-8
     # 不限制请求体大小
     max-swallow-size: -1
+
+spring:
+  application:
+    name: secret-chat-file
+  profiles:
+    active: dev   # dev-开发环境; prod-生产环境; test-测试环境;
 
 # 日志级别
 logging:
