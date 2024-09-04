@@ -2,9 +2,39 @@ server:
   port: 1000
 
 spring:
+  data:
+    redis:
+      host: 114.55.129.135
+      port: 6379
+      database: 0
+      password: wangzh
   cloud:
     nacos:
       discovery:
         server-addr: 114.55.129.135:8848
-        username: nacos
-        password: nacos
+#        username: nacos
+#        password: nacos
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 动态路由，从注册中心根据微服务的名称获得目标节点的地址
+      routes: # 配置路由规则（数组/list）
+        - id: authRoute   # 每一项路由规则都有一个唯一的id编号，可以自定义
+          uri: lb://secret-chat-auth    # lb=负载均衡，会动态寻址
+          predicates:
+            - Path=/a/**
+        - id: fileRoute
+          uri: lb://secret-chat-file
+          predicates:
+            - Path=/f/**
+        - id: mainRoute
+          uri: lb://secret-chat-main
+          predicates:
+            - Path=/m/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+            allowCredentials: true

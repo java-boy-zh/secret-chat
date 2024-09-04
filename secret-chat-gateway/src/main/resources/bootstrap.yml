@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: secret-chat-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: 114.55.129.135:8848
+        file-extension: yaml

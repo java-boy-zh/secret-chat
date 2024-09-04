@@ -2,9 +2,15 @@ server:
   port: 88
 
 spring:
+  data:
+    redis:
+      host: 114.55.129.135
+      port: 6379
+      database: 0
+      password: wangzh
   cloud:
     nacos:
       discovery:
         server-addr: 114.55.129.135:8848
-        username: nacos
-        password: nacos
+#        username: nacos
+#        password: nacos
