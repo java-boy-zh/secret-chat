@@ -14,6 +14,7 @@
         <module>secret-chat-common</module>
         <module>secret-chat-pojo</module>
         <module>secret-chat-api</module>
+        <module>secret-chat-gateway</module>
     </modules>
 
     <parent>

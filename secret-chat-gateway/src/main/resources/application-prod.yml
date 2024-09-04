@@ -1,5 +1,5 @@
 server:
-  port: 55
+  port: 1000
 
 spring:
   cloud:
