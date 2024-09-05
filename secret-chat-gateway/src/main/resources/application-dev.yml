@@ -1,3 +1,7 @@
+blackIp:
+  continueCounts: 3
+  timeInterval: 20
+  limintTimes: 30
 server:
   port: 1000
 

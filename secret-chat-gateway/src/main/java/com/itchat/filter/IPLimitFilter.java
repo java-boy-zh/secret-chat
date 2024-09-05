@@ -6,6 +6,7 @@ import com.itchat.result.GraceJSONResult;
 import com.itchat.result.ResponseStatusEnum;
 import com.itchat.utils.IPUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -37,10 +38,12 @@ public class IPLimitFilter extends BaseInfoProperties implements GlobalFilter, O
      * 如果超过3次，则限制访问30秒
      * 等待30秒静默后，才能够继续恢复访问
      */
-
-    private static final Integer continueCounts = 3;
-    private static final Integer timeInterval = 20;
-    private static final Integer limintTimes = 30;
+    @Value("${blackIp.continueCounts}")
+    private Integer continueCounts;
+    @Value("${blackIp.timeInterval}")
+    private Integer timeInterval;
+    @Value("${blackIp.limintTimes}")
+    private Integer limintTimes;
 
     private static final String ipRedisKey = "secret:chat:gateway:ip";
     private static final String ipRedisLimitKey = "secret:chat:gateway:ip:limit";
@@ -48,6 +51,8 @@ public class IPLimitFilter extends BaseInfoProperties implements GlobalFilter, O
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("网关 IP拦截器 开始进行拦截~~~");
+        log.info("continueCounts->{},timeInterval->{},limintTimes->{}",
+                continueCounts,timeInterval,limintTimes);
 
         return doLimit(exchange, chain);
     }
