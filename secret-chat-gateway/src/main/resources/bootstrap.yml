@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: secret-chat-gateway
-  cloud:
-    nacos:
-      config:
-        server-addr: localhost:8848
-        file-extension: yaml

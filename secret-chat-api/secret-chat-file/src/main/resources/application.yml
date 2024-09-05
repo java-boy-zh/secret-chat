@@ -1,4 +1,6 @@
 server:
+  servlet:
+    context-path: /file
   tomcat:
     uri-encoding: UTF-8
     # 不限制请求体大小

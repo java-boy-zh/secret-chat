@@ -22,15 +22,15 @@ spring:
         - id: authRoute   # 每一项路由规则都有一个唯一的id编号，可以自定义
           uri: lb://secret-chat-auth    # lb=负载均衡，会动态寻址
           predicates:
-            - Path=/a/**
+            - Path=/auth/**
         - id: fileRoute
           uri: lb://secret-chat-file
           predicates:
-            - Path=/f/**
+            - Path=/file/**
         - id: mainRoute
           uri: lb://secret-chat-main
           predicates:
-            - Path=/m/**
+            - Path=/main/**
       globalcors:
         cors-configurations:
           '[/**]':
