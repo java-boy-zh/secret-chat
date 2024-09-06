@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName BaseInfoProperties.java
  * @create 2024年09月04日 下午6:28

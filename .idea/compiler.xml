@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="secret-chat-main" />
+        <module name="secret-chat-base" />
         <module name="secret-chat-pojo" />
         <module name="secret-chat-common" />
-        <module name="secret-chat-main" />
         <module name="secret-chat-file" />
         <module name="secret-chat-gateway" />
         <module name="secret-chat-auth" />
@@ -19,6 +20,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="secret-chat-auth" options="-parameters" />
+      <module name="secret-chat-base" options="-parameters" />
       <module name="secret-chat-common" options="-parameters" />
       <module name="secret-chat-file" options="-parameters" />
       <module name="secret-chat-gateway" options="-parameters" />
