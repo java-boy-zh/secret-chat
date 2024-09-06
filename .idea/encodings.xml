@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+  <component name="Encoding" native2AsciiForPropertiesFiles="true" defaultCharsetForPropertiesFiles="UTF-8">
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-auth/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-auth/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-base/src/main/java" charset="UTF-8" />
@@ -8,15 +8,11 @@
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-file/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-main/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-api/secret-chat-main/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/secret-chat-api/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/secret-chat-api/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-pojo/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/secret-chat-pojo/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>
