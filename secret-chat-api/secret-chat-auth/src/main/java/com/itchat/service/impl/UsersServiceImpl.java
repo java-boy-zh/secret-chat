@@ -6,8 +6,10 @@ import com.itchat.enums.Sex;
 import com.itchat.mapper.UsersMapper;
 import com.itchat.pojo.Users;
 import com.itchat.service.UsersService;
+import com.itchat.utils.DesensitizationUtil;
 import com.itchat.utils.LocalDateUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,9 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
     public Users createUsers(String mobile, String nickname) {
         Users user = new Users();
         user.setMobile(mobile);
+        if (StringUtils.isBlank(nickname)) {
+            nickname = DesensitizationUtil.commonDisplay(mobile);
+        }
         user.setNickname(nickname);
 
         String uuid = UUID.randomUUID().toString();
