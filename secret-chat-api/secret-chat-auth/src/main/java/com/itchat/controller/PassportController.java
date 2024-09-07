@@ -1,7 +1,11 @@
 package com.itchat.controller;
 
 import com.itchat.common.BaseInfoProperties;
+import com.itchat.exceptions.GraceException;
+import com.itchat.pojo.Users;
 import com.itchat.result.GraceJSONResult;
+import com.itchat.result.ResponseStatusEnum;
+import com.itchat.service.UsersService;
 import com.itchat.tasks.SMSTask;
 import com.itchat.utils.IPUtil;
 import com.itchat.vo.RegistUserVO;
@@ -30,6 +34,9 @@ public class PassportController extends BaseInfoProperties {
 
     @Resource
     private SMSTask smsTask;
+
+    @Resource
+    private UsersService usersService;
 
     /**
      * 验证码获取接口
@@ -66,7 +73,31 @@ public class PassportController extends BaseInfoProperties {
                                   HttpServletRequest request)
             throws Exception {
 
-        return GraceJSONResult.ok();
+        // 首先判断用户输入验证码是否正确
+        String mobile = registUserVO.getMobile();
+        String smsCode = registUserVO.getSmsCode();
+        String nickname = registUserVO.getNickname();
+        String redisCode = redis.get(MOBILE_SMSCODE + ":" + mobile);
+
+        if (StringUtils.isBlank(redisCode) || !redisCode.equalsIgnoreCase(smsCode)) {
+            GraceException.display(ResponseStatusEnum.SMS_CODE_ERROR);
+        }
+
+        // 判断该用户是否存在
+        // 存在则不能重复注册
+        // 不存在则注册
+        Users user = usersService.queryUserByMobileIfExist(mobile);
+        if (user == null) {
+            // 表示该用户未注册过 进行用户注册
+            user = usersService.createUsers(mobile, nickname);
+        } else {
+            GraceException.display(ResponseStatusEnum.USER_ALREADY_EXIST_ERROR);
+        }
+        // 成功后删除验证码
+        redis.del(MOBILE_SMSCODE + ":" + mobile);
+
+        // 返回用户
+        return GraceJSONResult.ok(user);
     }
 
 }

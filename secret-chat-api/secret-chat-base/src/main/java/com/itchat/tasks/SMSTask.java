@@ -23,7 +23,7 @@ public class SMSTask {
 
     @Async
     public void sendSMSInTask(String mobile, String code) throws Exception {
-        smsUtils.sendSMS(mobile, code);
+//        smsUtils.sendSMS(mobile, code);
         log.info("异步任务中所发送的验证码为：{}", code);
     }
 
