@@ -35,13 +35,32 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
     @Override
     @Transactional
     public void modifyUserInfo(ModifyUserVO modifyUserVO) {
+        // 密聊号一年只能修改一次
         String userId = modifyUserVO.getUserId();
+        String wechatNum = modifyUserVO.getWechatNum();
+
+        Users updateUser = CopyBeanUtils.copy(modifyUserVO, Users.class);
+
         if (StringUtils.isBlank(userId)) {
             GraceException.display(ResponseStatusEnum.USER_INFO_UPDATED_ERROR);
         }
-        Users updateUser = CopyBeanUtils.copy(modifyUserVO, Users.class);
+
+        if (StringUtils.isNotBlank(wechatNum)) {
+            String isExist = redis.get(REDIS_USER_ALREADY_UPDATE_WECHAT_NUM + ":" + userId);
+            if (StringUtils.isNotBlank(isExist)) {
+                GraceException.display(ResponseStatusEnum.WECHAT_NUM_ALREADY_MODIFIED_ERROR);
+            }
+        }
+
         updateUser.setId(userId);
         usersMapper.updateById(updateUser);
+
+        // 如果用户修改微信号，则只能修改一次，放入redis中进行判断
+        if (StringUtils.isNotBlank(wechatNum)) {
+            redis.setByDays(REDIS_USER_ALREADY_UPDATE_WECHAT_NUM + ":" + userId,
+                    userId,
+                    365);
+        }
     }
 
     /**
