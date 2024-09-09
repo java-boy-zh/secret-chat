@@ -54,6 +54,14 @@ public class SecurityCheckTokenFilter extends BaseInfoProperties implements Glob
                 }
             }
         }
+        String fileStart = excludeUrlPathProperties.getFileStart();
+        if (StringUtils.isNotBlank(fileStart)) {
+            boolean matcher = antPathMatcher.matchStart(fileStart, requestURI);
+            if (matcher) {
+                // 匹配成功则 往下执行
+                return chain.filter(exchange);
+            }
+        }
         // 目前请求地址未在排除名单中，进行获取用户ID和用户Token操作
         HttpHeaders headers = request.getHeaders();
         String headerUserId = headers.getFirst(HEADER_USER_ID);
