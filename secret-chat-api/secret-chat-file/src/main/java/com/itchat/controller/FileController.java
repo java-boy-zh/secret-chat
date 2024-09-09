@@ -4,7 +4,9 @@ import com.itchat.config.MinIOConfig;
 import com.itchat.feigns.UserInfoServiceFeign;
 import com.itchat.result.GraceJSONResult;
 import com.itchat.result.ResponseStatusEnum;
+import com.itchat.utils.JsonUtils;
 import com.itchat.utils.MinIOUtils;
+import com.itchat.utils.QrCodeUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName FileController.java
  * @create 2024年09月09日 上午10:37
@@ -73,7 +77,11 @@ public class FileController {
         // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
         int index = filename.lastIndexOf(".");
         String suffixName = filename.substring(index);
-        filename = "face" + "/" + userId + "/" + userId + suffixName;
+        filename = "face"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + userId + suffixName;
 
         // 上传到Minio
         String faceUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
@@ -82,6 +90,41 @@ public class FileController {
                 true);
         // 远程调用 更新一下头像
         return userInfoServiceFeign.updateFace(userId, faceUrl);
+    }
+
+    @PostMapping("/generatorQrCode")
+    public String generatorQrCode(String wechatNumber,
+                                  String userId) throws Exception {
+
+        // 构建map对象
+        Map<String, String> map = new HashMap<>();
+        map.put("wechatNumber", wechatNumber);
+        map.put("userId", userId);
+
+        // 把对象转换为json字符串，用于存储到二维码中
+        String data = JsonUtils.objectToJson(map);
+
+        // 生成二维码
+        String qrCodePath = QrCodeUtils.generateQRCode(data);
+
+        // 把二维码上传到minio中
+        if (StringUtils.isBlank(qrCodePath)) {
+            return null;
+        }
+        String objectName = "wechatNumber"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + userId + ".png";
+
+        String imageQrCodeUrl = MinIOUtils.
+                uploadFile(minIOConfig.getBucketName(),
+                        objectName,
+                        qrCodePath,
+                        true);
+        // 删除掉本地的二维码
+//        Files.delete(Path.of(qrCodePath));
+        return imageQrCodeUrl;
     }
 
 }

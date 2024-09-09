@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName RegistUserVO.java
  * @create 2024年09月07日 上午9:15

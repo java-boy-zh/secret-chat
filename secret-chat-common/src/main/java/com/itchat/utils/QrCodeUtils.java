@@ -4,6 +4,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,10 +17,11 @@ import java.util.UUID;
 /**
  * @Auther 王青玄
  */
+@Slf4j
 public class QrCodeUtils {
 
     public static String generateQRCode(String data) {
-        String filePath = "/Volumes/lee/workspaces/test/qrcode.png";
+        String filePath = "E:/IMchat/图片/secretchat/qrcode.png";
         return QrCodeUtils.generateQRCode(data, filePath);
     }
 
@@ -55,7 +57,7 @@ public class QrCodeUtils {
             //                                     null,
             //                                     new FileInputStream(qrCodeFile));
 
-            System.out.println("二维码已生成并保存到: " + filePath);
+            log.info("二维码已生成并保存到: " + filePath);
             return filePath;
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,12 +66,11 @@ public class QrCodeUtils {
     }
 
     public static void main(String[] args) {
-        // String data = "https://www.itzixi.com"; // 二维码中的数据
-        String data = "Hello~ 慕课网"; // 二维码中的数据
+        String data = "Hello~"; // 二维码中的数据
         int width = 300; // 二维码的宽度
         int height = 300; // 二维码的高度
         String uuid = UUID.randomUUID().toString();
-        String filePath = "/Volumes/lee/workspaces/test/" + uuid + ".png"; // 生成的二维码文件的路径
+        String filePath = "E:/IMchat/图片/secretchat/" + uuid + ".png"; // 生成的二维码文件的路径
 
         QrCodeUtils.generateQRCode(data, width, height, filePath);
     }

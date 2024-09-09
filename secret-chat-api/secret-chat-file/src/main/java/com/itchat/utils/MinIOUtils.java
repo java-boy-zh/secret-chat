@@ -31,7 +31,7 @@ public class MinIOUtils {
     private static String accessKey;
     private static String secretKey;
 
-    private static final String SEPARATOR = "/";
+    public static final String SEPARATOR = "/";
 
     public MinIOUtils() {
     }

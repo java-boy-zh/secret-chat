@@ -2,6 +2,7 @@ package com.itchat.service.impl;
 
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.exceptions.GraceException;
+import com.itchat.feigns.FileServiceFeign;
 import com.itchat.mapper.UsersMapper;
 import com.itchat.pojo.Users;
 import com.itchat.result.ResponseStatusEnum;
@@ -26,6 +27,8 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
 
     @Resource
     private UsersMapper usersMapper;
+    @Resource
+    private FileServiceFeign fileServiceFeign;
 
     /**
      * 修改用户信息
@@ -49,6 +52,10 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
             String isExist = redis.get(REDIS_USER_ALREADY_UPDATE_WECHAT_NUM + ":" + userId);
             if (StringUtils.isNotBlank(isExist)) {
                 GraceException.display(ResponseStatusEnum.WECHAT_NUM_ALREADY_MODIFIED_ERROR);
+            } else {
+                // 修改微信二维码
+                String qrCodeUrl = getQrCodeUrl(wechatNum, userId);
+                updateUser.setWechatNumImg(qrCodeUrl);
             }
         }
 
@@ -73,4 +80,14 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
     public Users getUserById(String userId) {
         return usersMapper.selectById(userId);
     }
+
+    private String getQrCodeUrl(String wechatNumber,
+                                String userId) {
+        try {
+            return fileServiceFeign.generatorQrCode(wechatNumber, userId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

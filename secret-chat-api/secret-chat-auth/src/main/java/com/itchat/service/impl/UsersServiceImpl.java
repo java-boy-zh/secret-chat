@@ -3,6 +3,7 @@ package com.itchat.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.enums.Sex;
+import com.itchat.feigns.FileServiceFeign;
 import com.itchat.mapper.UsersMapper;
 import com.itchat.pojo.Users;
 import com.itchat.service.UsersService;
@@ -31,6 +32,8 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
 
     @Resource
     private UsersMapper usersMapper;
+    @Resource
+    private FileServiceFeign fileServiceFeign;
 
     /**
      * 根据手机号查询用户信息
@@ -68,7 +71,9 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
         String uuidStr[] = uuid.split("-");
         String wechatNum = "sc" + uuidStr[0] + uuidStr[1];
         user.setWechatNum(wechatNum);
-        user.setWechatNumImg(USER_FACE1);
+
+        String wechatNumUrl = getQrCodeUrl(wechatNum, TEMP_STRING + "sc" + uuidStr[0] + uuidStr[1]);
+        user.setWechatNumImg(wechatNumUrl);
 
         user.setRealName("");
         user.setSex(Sex.secret.type);
@@ -90,5 +95,14 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
         usersMapper.insert(user);
 
         return user;
+    }
+
+    private String getQrCodeUrl(String wechatNumber,
+                                String userId) {
+        try {
+            return fileServiceFeign.generatorQrCode(wechatNumber, userId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
