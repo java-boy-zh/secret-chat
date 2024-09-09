@@ -1,6 +1,7 @@
 package com.itchat.controller;
 
 import com.itchat.config.MinIOConfig;
+import com.itchat.feigns.UserInfoServiceFeign;
 import com.itchat.result.GraceJSONResult;
 import com.itchat.result.ResponseStatusEnum;
 import com.itchat.utils.MinIOUtils;
@@ -29,6 +30,8 @@ public class FileController {
 
     @Resource
     private MinIOConfig minIOConfig;
+    @Resource
+    private UserInfoServiceFeign userInfoServiceFeign;
 
     /*老式MVC服务传输文件到本地*/
     @PostMapping("/uploadFace1")
@@ -77,7 +80,8 @@ public class FileController {
                 filename,
                 file.getInputStream(),
                 true);
-        return GraceJSONResult.ok(faceUrl);
+        // 远程调用 更新一下头像
+        return userInfoServiceFeign.updateFace(userId, faceUrl);
     }
 
 }

@@ -66,7 +66,7 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
 
         String uuid = UUID.randomUUID().toString();
         String uuidStr[] = uuid.split("-");
-        String wechatNum = "secret-chat-" + uuidStr[0] + uuidStr[1];
+        String wechatNum = "sc" + uuidStr[0] + uuidStr[1];
         user.setWechatNum(wechatNum);
         user.setWechatNumImg(USER_FACE1);
 

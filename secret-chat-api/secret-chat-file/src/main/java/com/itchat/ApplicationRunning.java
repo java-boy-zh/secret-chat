@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
@@ -22,6 +23,7 @@ import java.net.UnknownHostException;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @EnableDiscoveryClient  // 开启服务的注册和发现功能
 @Slf4j
+@EnableFeignClients("com.itchat.feigns") // 开启远程调用客户端发现
 public class ApplicationRunning {
 
     public static void main(String[] args) throws UnknownHostException {
