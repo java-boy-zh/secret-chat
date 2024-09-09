@@ -159,4 +159,35 @@ public class FileController {
         return userInfoServiceFeign.updateFriendCircleBg(userId, imageUrl);
     }
 
+    @PostMapping("/uploadChatBg")
+    public GraceJSONResult uploadChatBg(@RequestParam("file") MultipartFile file,
+                                                String userId) throws Exception {
+
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 拿到上传文件的后缀
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 上传的头像地址
+        // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
+        int index = filename.lastIndexOf(".");
+        String suffixName = filename.substring(index);
+        filename = "chatBg"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + userId + suffixName;
+
+        // 上传到Minio
+        String imageUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+        // 远程调用 更新一下头像
+        return userInfoServiceFeign.updateFriendCircleBg(userId, imageUrl);
+    }
+
 }

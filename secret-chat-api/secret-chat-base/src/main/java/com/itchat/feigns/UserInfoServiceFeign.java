@@ -23,5 +23,10 @@ public interface UserInfoServiceFeign {
 
     @PostMapping("/updateFriendCircleBg")
     public GraceJSONResult updateFriendCircleBg(@RequestParam("userId") String userId,
-                                         @RequestParam("imageUrl") String imageUrl);
+                                                @RequestParam("imageUrl") String imageUrl);
+
+    @PostMapping("/uploadChatBg")
+    public GraceJSONResult updateChatBg(
+            @RequestParam("userId") String userId,
+            @RequestParam("imageUrl") String imageUrl);
 }

@@ -71,6 +71,20 @@ public class UserController extends BaseInfoProperties {
         UsersBO userBO = getUserBO(modifyUserVO.getUserId(), true);
         return GraceJSONResult.ok(userBO);
     }
+    @PostMapping("/uploadChatBg")
+    public GraceJSONResult updateChatBg(
+            @RequestParam("userId") String userId,
+            @RequestParam("imageUrl") String imageUrl) {
+        ModifyUserVO modifyUserVO = new ModifyUserVO();
+        modifyUserVO.setUserId(userId);
+        modifyUserVO.setChatBg(imageUrl);
+
+        // 修改用户信息
+        usersService.modifyUserInfo(modifyUserVO);
+        // 返回用户信息
+        UsersBO userBO = getUserBO(modifyUserVO.getUserId(), true);
+        return GraceJSONResult.ok(userBO);
+    }
 
     private UsersBO getUserBO(String userId, boolean needToken) {
         Users userDB = usersService.getUserById(userId);
