@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @Description 用户信息业务调用
  * @Version V1.0
  */
-@FeignClient(value = "secret-chat-main",path = "/main/userinfo")
+@FeignClient(value = "secret-chat-main", path = "/main/userinfo")
 public interface UserInfoServiceFeign {
 
     @PostMapping("/updateFace")
@@ -21,4 +21,7 @@ public interface UserInfoServiceFeign {
                                       @RequestParam("face") String face
     );
 
+    @PostMapping("/updateFriendCircleBg")
+    public GraceJSONResult updateFriendCircleBg(@RequestParam("userId") String userId,
+                                         @RequestParam("imageUrl") String imageUrl);
 }

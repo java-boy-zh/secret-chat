@@ -7,6 +7,7 @@ import com.itchat.result.ResponseStatusEnum;
 import com.itchat.utils.JsonUtils;
 import com.itchat.utils.MinIOUtils;
 import com.itchat.utils.QrCodeUtils;
+import com.itchat.utils.file.FileUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -123,8 +124,39 @@ public class FileController {
                         qrCodePath,
                         true);
         // 删除掉本地的二维码
-//        Files.delete(Path.of(qrCodePath));
+        FileUtils.deleteFile(qrCodePath);
         return imageQrCodeUrl;
+    }
+
+    @PostMapping("/uploadFriendCircleBg")
+    public GraceJSONResult uploadFriendCircleBg(@RequestParam("file") MultipartFile file,
+                                        String userId) throws Exception {
+
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 拿到上传文件的后缀
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 上传的头像地址
+        // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
+        int index = filename.lastIndexOf(".");
+        String suffixName = filename.substring(index);
+        filename = "friendCircleBg"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + userId + suffixName;
+
+        // 上传到Minio
+        String imageUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+        // 远程调用 更新一下头像
+        return userInfoServiceFeign.updateFriendCircleBg(userId, imageUrl);
     }
 
 }
