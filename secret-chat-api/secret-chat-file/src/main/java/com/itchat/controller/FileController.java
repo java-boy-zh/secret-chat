@@ -1,7 +1,12 @@
 package com.itchat.controller;
 
+import com.itchat.config.MinIOConfig;
 import com.itchat.result.GraceJSONResult;
+import com.itchat.result.ResponseStatusEnum;
+import com.itchat.utils.MinIOUtils;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +27,10 @@ import java.io.File;
 @RequestMapping("/file")
 public class FileController {
 
+    @Resource
+    private MinIOConfig minIOConfig;
+
+    /*老式MVC服务传输文件到本地*/
     @PostMapping("/uploadFace1")
     public GraceJSONResult uploadFace1(@RequestParam("file") MultipartFile file,
                                        String userId,
@@ -43,6 +52,32 @@ public class FileController {
         file.transferTo(newFile);
 
         return GraceJSONResult.ok();
+    }
+
+    @PostMapping("/uploadFace")
+    public GraceJSONResult uploadFace(@RequestParam("file") MultipartFile file,
+                                      String userId,
+                                      HttpServletRequest request) throws Exception {
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 拿到上传文件的后缀
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 上传的头像地址
+        // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
+        int index = filename.lastIndexOf(".");
+        String suffixName = filename.substring(index);
+        filename = "face" + "/" + userId + "/" + userId + suffixName;
+
+        // 上传到Minio
+        String faceUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+        return GraceJSONResult.ok(faceUrl);
     }
 
 }
