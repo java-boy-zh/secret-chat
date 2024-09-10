@@ -1,5 +1,6 @@
 package com.itchat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itchat.bo.NewFriendsBO;
@@ -139,9 +140,9 @@ public class FriendRequestServiceImpl extends BaseInfoProperties implements Frie
 
         // 还有一种情况，A添加B，B没有通过，所以A发出的好友请求过期了；
         // 但是，过期后，B向A发起好友请求，所以B被A通过后，那么两边的请求都应该“通过”
-        QueryWrapper updateWrapper = new QueryWrapper<FriendRequest>()
-                .eq("my_id", myFriendId)
-                .eq("friend_id", mySelfId);
+        LambdaQueryWrapper updateWrapper = new LambdaQueryWrapper<FriendRequest>()
+                .eq(FriendRequest::getMyId, myFriendId)
+                .eq(FriendRequest::getFriendId, mySelfId);
         FriendRequest requestOpposite = new FriendRequest();
         requestOpposite.setVerifyStatus(FriendRequestVerifyStatus.SUCCESS.type);
         friendRequestMapper.update(requestOpposite, updateWrapper);

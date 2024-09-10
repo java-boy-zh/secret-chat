@@ -1,8 +1,18 @@
 package com.itchat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.itchat.bo.ContactsBO;
 import com.itchat.common.BaseInfoProperties;
+import com.itchat.mapper.FriendshipMapper;
+import com.itchat.mapper.FriendshipMapperCustom;
+import com.itchat.pojo.Friendship;
 import com.itchat.service.FriendshipService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,4 +25,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class FriendshipServiceImpl extends BaseInfoProperties implements FriendshipService {
 
+    @Resource
+    private FriendshipMapper friendshipMapper;
+    @Resource
+    private FriendshipMapperCustom friendshipMapperCustom;
+
+    /**
+     * 根据自己的userId和朋友的userId查询出Friendship
+     *
+     * @param myId
+     * @param friendId
+     * @return
+     */
+    @Override
+    public Friendship getFriendship(String myId, String friendId) {
+        LambdaQueryWrapper<Friendship> query = new LambdaQueryWrapper<>();
+        query.eq(Friendship::getMyId, myId)
+                .eq(Friendship::getFriendId, friendId);
+        return friendshipMapper.selectOne(query);
+    }
+
+    /**
+     * 查询我的好友列表(通讯录)
+     *
+     * @param myId
+     * @param needBlack 查询黑名单
+     * @return
+     */
+    @Override
+    public List<ContactsBO> queryMyFriends(String myId, boolean needBlack) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("myId", myId);
+        map.put("needBlack", needBlack);
+
+        return friendshipMapperCustom.queryMyFriends(map);
+    }
 }
