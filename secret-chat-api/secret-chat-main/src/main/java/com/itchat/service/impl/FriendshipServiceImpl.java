@@ -109,4 +109,21 @@ public class FriendshipServiceImpl extends BaseInfoProperties implements Friends
 
         friendshipMapper.update(friendship, updateWrapper);
     }
+
+    @Transactional
+    @Override
+    public void delete(String myId, String friendId) {
+
+        LambdaQueryWrapper<Friendship> deleteWrapper1 = new LambdaQueryWrapper<>();
+        deleteWrapper1.eq(Friendship::getMyId, myId);
+        deleteWrapper1.eq(Friendship::getFriendId, friendId);
+
+        friendshipMapper.delete(deleteWrapper1);
+
+        LambdaQueryWrapper<Friendship> deleteWrapper2 = new LambdaQueryWrapper<>();
+        deleteWrapper2.eq(Friendship::getMyId, friendId);
+        deleteWrapper2.eq(Friendship::getFriendId, myId);
+
+        friendshipMapper.delete(deleteWrapper2);
+    }
 }

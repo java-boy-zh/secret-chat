@@ -53,4 +53,11 @@ public interface FriendshipService {
     void updateBlackList(String myId,
                                 String friendId,
                                 YesOrNo yesOrNo);
+
+    /**
+     * 删除好友关系
+     * @param myId
+     * @param friendId
+     */
+    void delete(String myId, String friendId);
 }

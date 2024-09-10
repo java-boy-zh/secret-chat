@@ -94,4 +94,17 @@ public class FriendShipController extends BaseInfoProperties {
         return GraceJSONResult.ok();
     }
 
+    @PostMapping("/delete")
+    public GraceJSONResult delete(HttpServletRequest request,
+                                  String friendId) {
+
+        if (StringUtils.isBlank(friendId)) {
+            return GraceJSONResult.error();
+        }
+
+        String myId = request.getHeader(HEADER_USER_ID);
+        friendshipService.delete(myId, friendId);
+        return GraceJSONResult.ok();
+    }
+
 }
