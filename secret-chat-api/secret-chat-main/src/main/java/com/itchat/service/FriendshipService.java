@@ -1,6 +1,7 @@
 package com.itchat.service;
 
 import com.itchat.bo.ContactsBO;
+import com.itchat.enums.YesOrNo;
 import com.itchat.pojo.Friendship;
 
 import java.util.List;
@@ -32,4 +33,24 @@ public interface FriendshipService {
      * @return
      */
     List<ContactsBO> queryMyFriends(String myId, boolean needBlack);
+
+    /**
+     * 修改我的好友的备注名
+     * @param myId
+     * @param friendId
+     * @param friendRemark
+     */
+    void updateFriendRemark(String myId,
+                                   String friendId,
+                                   String friendRemark);
+
+    /**
+     * 拉黑或者恢复好友
+     * @param myId
+     * @param friendId
+     * @param yesOrNo
+     */
+    void updateBlackList(String myId,
+                                String friendId,
+                                YesOrNo yesOrNo);
 }

@@ -3,13 +3,16 @@ package com.itchat.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itchat.bo.ContactsBO;
 import com.itchat.common.BaseInfoProperties;
+import com.itchat.enums.YesOrNo;
 import com.itchat.mapper.FriendshipMapper;
 import com.itchat.mapper.FriendshipMapperCustom;
 import com.itchat.pojo.Friendship;
 import com.itchat.service.FriendshipService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,5 +62,51 @@ public class FriendshipServiceImpl extends BaseInfoProperties implements Friends
         map.put("needBlack", needBlack);
 
         return friendshipMapperCustom.queryMyFriends(map);
+    }
+
+    /**
+     * 修改我的好友的备注名
+     *
+     * @param myId
+     * @param friendId
+     * @param friendRemark
+     */
+    @Override
+    @Transactional
+    public void updateFriendRemark(String myId,
+                                   String friendId,
+                                   String friendRemark) {
+        LambdaQueryWrapper<Friendship> updateWrapper = new LambdaQueryWrapper<>();
+        updateWrapper.eq(Friendship::getMyId, myId);
+        updateWrapper.eq(Friendship::getFriendId, friendId);
+
+        Friendship friendship = new Friendship();
+        friendship.setFriendRemark(friendRemark);
+        friendship.setUpdatedTime(LocalDateTime.now());
+
+        friendshipMapper.update(friendship, updateWrapper);
+    }
+
+    /**
+     * 拉黑或者恢复好友
+     *
+     * @param myId
+     * @param friendId
+     * @param yesOrNo
+     */
+    @Override
+    @Transactional
+    public void updateBlackList(String myId,
+                                String friendId,
+                                YesOrNo yesOrNo) {
+        LambdaQueryWrapper<Friendship> updateWrapper = new LambdaQueryWrapper<>();
+        updateWrapper.eq(Friendship::getMyId, myId);
+        updateWrapper.eq(Friendship::getFriendId, friendId);
+
+        Friendship friendship = new Friendship();
+        friendship.setIsBlack(yesOrNo.type);
+        friendship.setUpdatedTime(LocalDateTime.now());
+
+        friendshipMapper.update(friendship, updateWrapper);
     }
 }
