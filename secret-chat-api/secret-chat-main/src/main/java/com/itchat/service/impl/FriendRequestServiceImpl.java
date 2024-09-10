@@ -1,11 +1,15 @@
 package com.itchat.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.itchat.bo.NewFriendsBO;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.enums.FriendRequestVerifyStatus;
 import com.itchat.mapper.FriendRequestMapper;
+import com.itchat.mapper.FriendRequestMapperCustom;
 import com.itchat.pojo.FriendRequest;
 import com.itchat.service.FriendRequestService;
+import com.itchat.utils.PagedGridResult;
 import com.itchat.vo.NewFriendRequestVO;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
@@ -13,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,6 +33,8 @@ public class FriendRequestServiceImpl extends BaseInfoProperties implements Frie
 
     @Resource
     private FriendRequestMapper friendRequestMapper;
+    @Resource
+    private FriendRequestMapperCustom friendRequestMapperCustom;
 
     /**
      * 新增新的好友请求
@@ -59,5 +67,27 @@ public class FriendRequestServiceImpl extends BaseInfoProperties implements Frie
         insertFriendRequest.setVerifyMessage(sb.toString());
 
         friendRequestMapper.insert(insertFriendRequest);
+    }
+
+    /**
+     * 分页查询 当前用户的好友请求列表
+     *
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public PagedGridResult queryNewFriendList(String userId,
+                                              Integer page,
+                                              Integer pageSize) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("mySelfId", userId);
+
+        Page<NewFriendsBO> pageInfo = new Page<>(page, pageSize);
+        friendRequestMapperCustom.queryNewFriendList(pageInfo, map);
+
+        return setterPagedGridPlus(pageInfo);
     }
 }

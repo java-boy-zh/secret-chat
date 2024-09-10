@@ -1,5 +1,6 @@
 package com.itchat.service;
 
+import com.itchat.utils.PagedGridResult;
 import com.itchat.vo.NewFriendRequestVO;
 
 /**
@@ -18,4 +19,12 @@ public interface FriendRequestService {
      */
     void addNewRequest(NewFriendRequestVO friendRequestVO);
 
+    /**
+     * 分页查询 当前用户的好友请求列表
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    PagedGridResult queryNewFriendList(String userId, Integer page, Integer pageSize);
 }
