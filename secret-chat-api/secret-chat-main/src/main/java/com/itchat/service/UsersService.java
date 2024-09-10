@@ -26,4 +26,11 @@ public interface UsersService {
      * @return
      */
     Users getUserById(String userId);
+
+    /**
+     * 根据用户密聊号、手机号查询用户
+     * @param queryString
+     * @return
+     */
+    Users getByWechatNumOrMobile(String queryString);
 }

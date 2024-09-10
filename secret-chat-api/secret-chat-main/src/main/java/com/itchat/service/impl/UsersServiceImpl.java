@@ -1,5 +1,6 @@
 package com.itchat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.exceptions.GraceException;
 import com.itchat.feigns.FileServiceFeign;
@@ -79,6 +80,21 @@ public class UsersServiceImpl extends BaseInfoProperties implements UsersService
     @Override
     public Users getUserById(String userId) {
         return usersMapper.selectById(userId);
+    }
+
+    /**
+     * 根据用户密聊号、手机号查询用户
+     *
+     * @param queryString
+     * @return
+     */
+    @Override
+    public Users getByWechatNumOrMobile(String queryString) {
+        LambdaQueryWrapper<Users> query = new LambdaQueryWrapper<>();
+        query.eq(Users::getWechatNum, queryString)
+                .or()
+                .eq(Users::getMobile, queryString);
+        return usersMapper.selectOne(query);
     }
 
     private String getQrCodeUrl(String wechatNumber,
