@@ -1,5 +1,6 @@
 package com.itchat.controller;
 
+import com.itchat.bo.FriendCircleBO;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.pojo.FriendCircleLiked;
 import com.itchat.result.GraceJSONResult;
@@ -54,7 +55,55 @@ public class FriendCircleController extends BaseInfoProperties {
 
         PagedGridResult gridResult = friendCircleService.queryList(userId, page, pageSize);
 
+        List<FriendCircleBO> list = (List<FriendCircleBO>)gridResult.getRows();
+        for (FriendCircleBO f : list) {
+            String friendCircleId = f.getFriendCircleId();
+            List<FriendCircleLiked> likedList = friendCircleService.queryLikedFriends(friendCircleId);
+            f.setLikedFriends(likedList);
+
+            boolean res = friendCircleService.doILike(friendCircleId, userId);
+            f.setDoILike(res);
+        }
+
         return GraceJSONResult.ok(gridResult);
+    }
+
+    @PostMapping("/like")
+    public GraceJSONResult like(String friendCircleId,
+                                HttpServletRequest request) {
+
+        String userId = request.getHeader(HEADER_USER_ID);
+        friendCircleService.like(friendCircleId, userId);
+
+        return GraceJSONResult.ok();
+    }
+
+    @PostMapping("/unlike")
+    public GraceJSONResult unlike(String friendCircleId,
+                                  HttpServletRequest request) {
+
+        String userId = request.getHeader(HEADER_USER_ID);
+        friendCircleService.unlike(friendCircleId, userId);
+
+        return GraceJSONResult.ok();
+    }
+
+    @PostMapping("/likedFriends")
+    public GraceJSONResult likedFriends(String friendCircleId,
+                                        HttpServletRequest request) {
+        List<FriendCircleLiked> likedList =
+                friendCircleService.queryLikedFriends(friendCircleId);
+        return GraceJSONResult.ok(likedList);
+    }
+
+    @PostMapping("/delete")
+    public GraceJSONResult delete(String friendCircleId,
+                                  HttpServletRequest request) {
+
+        String userId = request.getHeader(HEADER_USER_ID);
+        friendCircleService.delete(friendCircleId, userId);
+
+        return GraceJSONResult.ok();
     }
 
 }

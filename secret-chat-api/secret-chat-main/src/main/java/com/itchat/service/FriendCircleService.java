@@ -1,7 +1,10 @@
 package com.itchat.service;
 
+import com.itchat.pojo.FriendCircleLiked;
 import com.itchat.utils.PagedGridResult;
 import com.itchat.vo.FriendCircleVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,4 +30,40 @@ public interface FriendCircleService {
      * @return
      */
     PagedGridResult queryList(String userId, Integer page, Integer pageSize);
+
+    /**
+     * 点赞朋友圈
+     * @param friendCircleId
+     * @param userId
+     */
+    void like(String friendCircleId, String userId);
+
+    /**
+     * 取消(删除)点赞朋友圈
+     * @param friendCircleId
+     * @param userId
+     */
+    void unlike(String friendCircleId, String userId);
+
+    /**
+     * 查询朋友圈的点赞列表
+     * @param friendCircleId
+     * @return
+     */
+    List<FriendCircleLiked> queryLikedFriends(String friendCircleId);
+
+    /**
+     * 判断当前用户是否点赞过朋友圈
+     * @param friendCircleId
+     * @param userId
+     * @return
+     */
+    boolean doILike(String friendCircleId, String userId);
+
+    /**
+     * 删除朋友圈
+     * @param friendCircleId
+     * @param userId
+     */
+    void delete(String friendCircleId, String userId);
 }
