@@ -1,5 +1,6 @@
 package com.itchat.service;
 
+import com.itchat.utils.PagedGridResult;
 import com.itchat.vo.FriendCircleVO;
 
 /**
@@ -18,4 +19,12 @@ public interface FriendCircleService {
      */
     void publish(FriendCircleVO friendCircleVO);
 
+    /**
+     * 查询朋友圈信息
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    PagedGridResult queryList(String userId, Integer page, Integer pageSize);
 }
