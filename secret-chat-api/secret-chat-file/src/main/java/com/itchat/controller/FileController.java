@@ -190,4 +190,31 @@ public class FileController {
         return userInfoServiceFeign.updateFriendCircleBg(userId, imageUrl);
     }
 
+    @PostMapping("/uploadFriendCircleImage")
+    public GraceJSONResult uploadFriendCircleImage(@RequestParam("file") MultipartFile file,
+                                                   String userId) throws Exception {
+
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+
+        filename = "friendCircleImage"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + FileUtils.dealWithoutFilename(filename);
+
+        String imageUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+
+        return GraceJSONResult.ok(imageUrl);
+    }
+
 }
