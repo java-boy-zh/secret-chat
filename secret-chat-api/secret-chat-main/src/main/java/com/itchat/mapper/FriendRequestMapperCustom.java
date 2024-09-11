@@ -1,9 +1,7 @@
 package com.itchat.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itchat.bo.NewFriendsBO;
-import com.itchat.pojo.FriendRequest;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
@@ -16,7 +14,7 @@ import java.util.Map;
  * @author 王青玄
  * @since 2024-09-07
  */
-public interface FriendRequestMapperCustom extends BaseMapper<FriendRequest> {
+public interface FriendRequestMapperCustom {
 
     Page<NewFriendsBO> queryNewFriendList(
             @Param("page") Page<NewFriendsBO> pageInfo,

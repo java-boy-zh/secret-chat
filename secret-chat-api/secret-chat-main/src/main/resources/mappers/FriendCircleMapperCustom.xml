@@ -12,6 +12,7 @@
                u.face          as userFace,
                fc.words        as words,
                fc.images       as images,
+               fc.video        as video,
                fc.publish_time as publishTime
         from friend_circle fc
                  left join
