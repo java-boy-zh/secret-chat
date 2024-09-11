@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName FriendRequestController.java
  * @create 2024年09月10日 下午5:52
