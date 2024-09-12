@@ -1,9 +1,11 @@
 package com.itchat.controller;
 
+import com.itchat.bo.CommentBO;
 import com.itchat.bo.FriendCircleBO;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.pojo.FriendCircleLiked;
 import com.itchat.result.GraceJSONResult;
+import com.itchat.service.CommentService;
 import com.itchat.service.FriendCircleService;
 import com.itchat.utils.PagedGridResult;
 import com.itchat.vo.FriendCircleVO;
@@ -31,6 +33,8 @@ public class FriendCircleController extends BaseInfoProperties {
 
     @Resource
     private FriendCircleService friendCircleService;
+    @Resource
+    private CommentService commentService;
 
     @PostMapping("/publish")
     public GraceJSONResult publish(
@@ -55,7 +59,7 @@ public class FriendCircleController extends BaseInfoProperties {
 
         PagedGridResult gridResult = friendCircleService.queryList(userId, page, pageSize);
 
-        List<FriendCircleBO> list = (List<FriendCircleBO>)gridResult.getRows();
+        List<FriendCircleBO> list = (List<FriendCircleBO>) gridResult.getRows();
         for (FriendCircleBO f : list) {
             String friendCircleId = f.getFriendCircleId();
             List<FriendCircleLiked> likedList = friendCircleService.queryLikedFriends(friendCircleId);
@@ -63,6 +67,9 @@ public class FriendCircleController extends BaseInfoProperties {
 
             boolean res = friendCircleService.doILike(friendCircleId, userId);
             f.setDoILike(res);
+
+            List<CommentBO> commentList = commentService.queryAll(friendCircleId);
+            f.setCommentList(commentList);
         }
 
         return GraceJSONResult.ok(gridResult);
