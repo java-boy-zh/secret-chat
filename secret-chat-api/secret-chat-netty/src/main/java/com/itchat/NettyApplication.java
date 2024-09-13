@@ -1,6 +1,6 @@
 package com.itchat;
 
-import com.itchat.initializer.HttpServerInitializer;
+import com.itchat.http.initializer.HttpServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;

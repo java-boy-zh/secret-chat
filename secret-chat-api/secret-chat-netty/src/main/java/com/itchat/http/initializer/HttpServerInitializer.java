@@ -1,6 +1,6 @@
-package com.itchat.initializer;
+package com.itchat.http.initializer;
 
-import com.itchat.handler.HttpHandler;
+import com.itchat.http.handler.HttpHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
