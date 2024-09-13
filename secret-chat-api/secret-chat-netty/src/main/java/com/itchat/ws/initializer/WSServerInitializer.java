@@ -51,7 +51,7 @@ public class WSServerInitializer extends ChannelInitializer<SocketChannel> {
 
         /*=============================支持WebSocket相关协议的Handler=======================================*/
 
-        // 添加自定义的处理器，当请求返回时带上 “hello 王青玄~”
+        // 添加自定义的处理器
         pipeline.addLast(new WSChatHandler());
     }
 
