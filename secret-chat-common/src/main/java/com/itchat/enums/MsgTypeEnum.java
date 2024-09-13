@@ -28,5 +28,14 @@ public enum MsgTypeEnum {
 	
 	public Integer getType() {
 		return type;
-	}  
+	}
+
+	public static MsgTypeEnum getByType(Integer type) {
+		for (MsgTypeEnum msgType : MsgTypeEnum.values()) {
+			if (msgType.type.equals(type)) {
+				return msgType;
+			}
+		}
+		return null; // 如果没有找到对应的type，则返回null
+	}
 }

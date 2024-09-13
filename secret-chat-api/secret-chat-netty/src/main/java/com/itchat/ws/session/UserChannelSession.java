@@ -43,6 +43,7 @@ public class UserChannelSession {
         }
         multiChannels.add(channel);
     }
+
     // 移除多余的会话
     public static void removeUselessChannels(String userId, String channelId) {
 
@@ -51,7 +52,7 @@ public class UserChannelSession {
             return;
         }
 
-        for (int i = 0 ; i < channels.size() ; i ++) {
+        for (int i = 0; i < channels.size(); i++) {
             Channel tempChannel = channels.get(i);
             if (tempChannel.id().asLongText().equals(channelId)) {
                 channels.remove(i);
@@ -60,10 +61,32 @@ public class UserChannelSession {
 
         multiSession.put(userId, channels);
     }
+
     // 根据用户ID获取会话
     public static List<Channel> getMultiChannels(String userId) {
         return multiSession.get(userId);
     }
+
+    // 根据用户ID和当前ChannelId获取其他的Channels
+    public static List<Channel> getMyOtherChannels(String userId, String channelId) {
+        List<Channel> channels = getMultiChannels(userId);
+
+        List<Channel> myOtherChannels = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(channels)) {
+            return myOtherChannels;
+        }
+
+        for (int i = 0; i < channels.size(); i++) {
+            Channel tempChannel = channels.get(i);
+            if (!tempChannel.id().asLongText().equals(channelId)) {
+                myOtherChannels.add(tempChannel);
+            }
+        }
+
+        return myOtherChannels;
+    }
+
     // 打印用户+会话
     public static void outputMulti() {
 

@@ -4,17 +4,21 @@ import com.itchat.enums.MsgTypeEnum;
 import com.itchat.netty.ChatMsg;
 import com.itchat.netty.DataContent;
 import com.itchat.utils.JsonUtils;
+import com.itchat.utils.LocalDateUtils;
 import com.itchat.ws.session.UserChannelSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author 王哲
@@ -58,13 +62,53 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String currentChannelShortId = currentChannel.id().asShortText();
 
         // 判断消息类型 根据不同的类型 做不同的处理
-        if (msgType == MsgTypeEnum.CONNECT_INIT.type) {
+        MsgTypeEnum msgTypeEnum = MsgTypeEnum.getByType(msgType);
+        assert msgTypeEnum != null;
+        switch (msgTypeEnum) {
             // 当websocket初次open的时候，初始化channel，把channel和用户userid关联起来
-            UserChannelSession.putMultiChannels(senderId, currentChannel);
-            UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
+            case CONNECT_INIT -> {
+                UserChannelSession.putMultiChannels(senderId, currentChannel);
+                UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
+            }
+
+            // 文字表情消息
+            case WORDS -> {
+                // 获取所有接收者的Channel集合
+                List<Channel> receiverMultiChannels = UserChannelSession.getMultiChannels(receiverId);
+                if (CollectionUtils.isEmpty(receiverMultiChannels)) {
+                    // receiverMultiChannels为空，表示用户离线/断线状态，
+                    // 消息不需要发送，后续可以存储到数据库
+                    chatMsg.setIsReceiverOnLine(false);
+
+                }else {
+                    chatMsg.setIsReceiverOnLine(true);
+
+                    sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels);
+                }
+            }
         }
 
+        // 将消息同步给自己的其他端设备
+        List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
+        sendDataContentByChannel(dataContent, chatMsg, myOtherChannels);
+
         UserChannelSession.outputMulti();
+    }
+
+    private void sendDataContentByChannel(DataContent dataContent, ChatMsg chatMsg, List<Channel> receiverMultiChannels) {
+        for (Channel receiverMultiChannel : receiverMultiChannels) {
+            ChannelId receiverChannelId = receiverMultiChannel.id();
+            Channel channel = clients.find(receiverChannelId);
+            if (channel != null) {
+                // 组装消息 发送出去
+                dataContent.setChatMsg(chatMsg);
+
+                String chatTime = LocalDateUtils.format(chatMsg.getChatTime(),LocalDateUtils.DATETIME_PATTERN_2);
+                dataContent.setChatTime(chatTime);
+
+                channel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+            }
+        }
     }
 
     /**
