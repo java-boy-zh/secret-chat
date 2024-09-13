@@ -45,6 +45,9 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
         // 传输数据
         currentChannel.writeAndFlush(textWebSocketFrame);
+
+//        // 群发
+//        clients.writeAndFlush(new TextWebSocketFrame("群发消息"));
     }
 
     /**
