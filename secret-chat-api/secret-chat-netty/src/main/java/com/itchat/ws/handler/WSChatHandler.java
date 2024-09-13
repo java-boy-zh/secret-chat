@@ -1,5 +1,10 @@
 package com.itchat.ws.handler;
 
+import com.itchat.enums.MsgTypeEnum;
+import com.itchat.netty.ChatMsg;
+import com.itchat.netty.DataContent;
+import com.itchat.utils.JsonUtils;
+import com.itchat.ws.session.UserChannelSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -8,6 +13,8 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
 
 /**
  * @author 王哲
@@ -33,21 +40,31 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String content = frame.text();
         log.info("客户端传递过来的消息为->{}", content);
 
+        // 将消息转成接收类
+        DataContent dataContent = JsonUtils.jsonToPojo(content, DataContent.class);
+        ChatMsg chatMsg = dataContent.getChatMsg();
+        // 根据消息 获取其中的一些数据
+        String msgText = chatMsg.getMsg();
+        String receiverId = chatMsg.getReceiverId();
+        String senderId = chatMsg.getSenderId();
+        // 时间校准，以服务器的时间为准
+        chatMsg.setChatTime(LocalDateTime.now());
+        Integer msgType = chatMsg.getMsgType();
+
         // 获取channel
         Channel currentChannel = context.channel();
         // 拿到channelId
         String currentChannelLongId = currentChannel.id().asLongText();
         String currentChannelShortId = currentChannel.id().asShortText();
-        log.info("客户端当前Channel的长ID->{},短ID->{}", currentChannelLongId, currentChannelShortId);
 
-        // 构建传输载体
-        TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(currentChannelLongId);
+        // 判断消息类型 根据不同的类型 做不同的处理
+        if (msgType == MsgTypeEnum.CONNECT_INIT.type) {
+            // 当websocket初次open的时候，初始化channel，把channel和用户userid关联起来
+            UserChannelSession.putMultiChannels(senderId, currentChannel);
+            UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
+        }
 
-        // 传输数据
-        currentChannel.writeAndFlush(textWebSocketFrame);
-
-//        // 群发
-//        clients.writeAndFlush(new TextWebSocketFrame("群发消息"));
+        UserChannelSession.outputMulti();
     }
 
     /**
