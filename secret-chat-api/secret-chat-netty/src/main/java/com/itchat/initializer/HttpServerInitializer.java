@@ -1,5 +1,6 @@
 package com.itchat.initializer;
 
+import com.itchat.handler.HttpHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -25,7 +26,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         // 添加编解码器 当请求到服务端需要解码，到客户端进行编码
         pipeline.addLast("HttpServerCodec", new HttpServerCodec());
         // 添加自定义的处理器，当请求返回时带上 “hello 王青玄~”
-        pipeline.addLast("", null);
+        pipeline.addLast("HttpHandler", new HttpHandler());
     }
 
 }
