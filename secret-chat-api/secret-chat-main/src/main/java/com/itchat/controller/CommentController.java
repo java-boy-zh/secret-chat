@@ -8,6 +8,7 @@ import com.itchat.vo.CommentVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +35,26 @@ public class CommentController extends BaseInfoProperties {
                                   HttpServletRequest request) {
         CommentBO commentBO = commentService.createComment(commentVO);
         return GraceJSONResult.ok(commentBO);
+    }
+
+    @PostMapping("/query")
+    public GraceJSONResult query(String friendCircleId) {
+        return GraceJSONResult.ok(commentService.queryAll(friendCircleId));
+    }
+
+    @PostMapping("/delete")
+    public GraceJSONResult delete(String commentUserId,
+                                  String commentId,
+                                  String friendCircleId) {
+
+        if (StringUtils.isBlank(commentUserId) ||
+                StringUtils.isBlank(commentId) ||
+                StringUtils.isBlank(friendCircleId)
+        ) {
+            return GraceJSONResult.error();
+        }
+
+        commentService.deleteComment(commentUserId, commentId, friendCircleId);
+        return GraceJSONResult.ok();
     }
 }

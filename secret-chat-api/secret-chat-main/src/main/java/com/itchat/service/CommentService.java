@@ -30,4 +30,11 @@ public interface CommentService {
      */
     List<CommentBO> queryAll(String friendCircleId);
 
+    /**
+     * 删除评论
+     * @param commentUserId
+     * @param commentId
+     * @param friendCircleId
+     */
+    void deleteComment(String commentUserId, String commentId, String friendCircleId);
 }

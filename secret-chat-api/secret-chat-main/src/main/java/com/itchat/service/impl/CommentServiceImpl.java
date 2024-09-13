@@ -1,5 +1,6 @@
 package com.itchat.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.itchat.bo.CommentBO;
 import com.itchat.common.BaseInfoProperties;
 import com.itchat.mapper.CommentMapper;
@@ -54,7 +55,7 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
 
         // 留言后的最新评论数据需要返回给前端（提供前端做的扩展数据）
         CommentBO commentBO = new CommentBO();
-        BeanUtils.copyProperties(pendingComment, commentVO);
+        BeanUtils.copyProperties(pendingComment, commentBO);
 
         Users commentUser = usersService.getUserById(commentBO.getCommentUserId());
         commentBO.setCommentUserNickname(commentUser.getNickname());
@@ -76,5 +77,24 @@ public class CommentServiceImpl extends BaseInfoProperties implements CommentSer
         map.put("friendCircleId", friendCircleId);
 
         return commentMapperCustom.queryFriendCircleComments(map);
+    }
+
+    /**
+     * 删除评论
+     *
+     * @param commentUserId
+     * @param commentId
+     * @param friendCircleId
+     */
+    @Override
+    public void deleteComment(String commentUserId,
+                              String commentId,
+                              String friendCircleId) {
+        LambdaQueryWrapper<Comment> deleteWrapper = new LambdaQueryWrapper<>();
+        deleteWrapper.eq(Comment::getId, commentId);
+        deleteWrapper.eq(Comment::getCommentUserId, commentUserId);
+        deleteWrapper.eq(Comment::getFriendCircleId, friendCircleId);
+
+        commentMapper.delete(deleteWrapper);
     }
 }
