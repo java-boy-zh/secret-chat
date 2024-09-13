@@ -70,8 +70,15 @@ public class SecurityCheckTokenFilter extends BaseInfoProperties implements Glob
         log.info("当前请求的用户ID为{}，用户Token为{}", headerUserId, headerUserToken);
         if (StringUtils.isNotBlank(headerUserId)
                 && StringUtils.isNotBlank(headerUserToken)) {
-            String redisUserToken = redis.get(REDIS_USER_TOKEN + ":" + headerUserId);
-            if (headerUserToken.equals(redisUserToken)) {
+//            // 单设备登录
+//            String redisUserToken = redis.get(REDIS_USER_TOKEN + ":" + headerUserId);
+//            if (headerUserToken.equals(redisUserToken)) {
+//                return chain.filter(exchange);
+//            }
+
+            // 多设备登录
+            String redisUserId = redis.get(REDIS_USER_TOKEN + ":" + headerUserToken);
+            if (headerUserId.equals(redisUserId)) {
                 return chain.filter(exchange);
             }
         }

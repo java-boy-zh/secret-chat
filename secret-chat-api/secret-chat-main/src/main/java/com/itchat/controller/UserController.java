@@ -118,7 +118,10 @@ public class UserController extends BaseInfoProperties {
             // 生成UserToken
             String uToken = TOKEN_USER_PREFIX + SYMBOL_DOT + UUID.randomUUID();
             // 本方式只能限制用户在一台设备进行登录
-            redis.set(REDIS_USER_TOKEN + ":" + userId, uToken);   // 设置分布式会话
+//        redis.set(REDIS_USER_TOKEN + ":" + user.getId(), uToken);   // 设置分布式会话
+            // 运行多台设备登录同一个账号
+            redis.set(REDIS_USER_TOKEN + ":" + uToken, userId);   // 设置分布式会话
+
             resultUserBO.setUserToken(uToken);
         }
         return resultUserBO;
