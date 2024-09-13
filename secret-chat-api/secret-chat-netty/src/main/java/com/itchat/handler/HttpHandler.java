@@ -8,7 +8,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 
 /**
  * @author 王哲
@@ -25,22 +24,25 @@ public class HttpHandler extends SimpleChannelInboundHandler<HttpObject> {
         // 获取channel
         Channel channel = context.channel();
 
-        // 打印客户端的远程地址
-        log.info("客户端远程地址为{}", channel.remoteAddress());
+        // 如果HttpObject 属于是Http客户端的请求 再进行业务处理
+        if (http instanceof HttpRequest) {
+            // 打印客户端的远程地址
+            log.info("客户端远程地址为{}", channel.remoteAddress());
 
-        // 通过缓冲区定义发送的消息，读写数据都是通过缓冲区进行数据交换的
-        ByteBuf content = Unpooled.copiedBuffer("hello 王青玄~", CharsetUtil.UTF_8);
+            // 通过缓冲区定义发送的消息，读写数据都是通过缓冲区进行数据交换的
+            ByteBuf content = Unpooled.copiedBuffer("hello 王青玄~", CharsetUtil.UTF_8);
 
-        // 构建Http的响应
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1,
-                HttpResponseStatus.OK,
-                content);
-        // 为Http客户端的响应添加数据类型和数据长度
-        response.headers().set(HttpHeaderNames.CONTENT_TYPE, MediaType.TEXT_HTML_VALUE);
-        response.headers().set(HttpHeaderNames.CONTENT_LENGTH,content.readableBytes());
+            // 构建Http的响应
+            FullHttpResponse response = new DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.OK,
+                    content);
+            // 为Http客户端的响应添加数据类型和数据长度
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8");
+            response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
 
-        // 将响应数据写入缓冲区刷新到客户端
-        context.writeAndFlush(response);
+            // 将响应数据写入缓冲区刷新到客户端
+            context.writeAndFlush(response);
+        }
     }
 }
