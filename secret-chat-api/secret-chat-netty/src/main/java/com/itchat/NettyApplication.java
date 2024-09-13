@@ -1,6 +1,6 @@
 package com.itchat;
 
-import com.itchat.http.initializer.HttpServerInitializer;
+import com.itchat.ws.initializer.WSServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -31,7 +31,7 @@ public class NettyApplication {
             ServerBootstrap server = new ServerBootstrap();
             server.group(bossGroup, workerGroup)                // 对服务器设置主从线程组
                     .channel(NioServerSocketChannel.class)      // 设置NIO的双向信道
-                    .childHandler(new HttpServerInitializer()); // 设置信道的处理器，用于处理从线程组的任务
+                    .childHandler(new WSServerInitializer());   // 设置信道的处理器，用于处理从线程组的任务
 
             // 3) 设置Netty服务端口号，并设置为同步启动
             ChannelFuture channelFuture = server.bind(875).sync();
