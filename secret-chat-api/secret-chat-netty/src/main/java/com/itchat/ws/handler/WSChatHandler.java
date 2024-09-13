@@ -97,6 +97,10 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String currentChannelLongId = channel.id().asLongText();
         log.info("客户端移除链接，当前Channel的长ID->{}", currentChannelLongId);
 
+        // 移除多余的会话
+        String userId = UserChannelSession.getUserIdByChannelId(currentChannelLongId);
+        UserChannelSession.removeUselessChannels(userId, currentChannelLongId);
+
         // 将channel的长id从 ChannelGroup 进行移除
         clients.remove(channel);
     }
@@ -117,6 +121,11 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
         // 发生异常之后 关闭链接
         channel.close();
+
+        // 移除多余的会话
+        String userId = UserChannelSession.getUserIdByChannelId(currentChannelLongId);
+        UserChannelSession.removeUselessChannels(userId, currentChannelLongId);
+
         // 将channel的长id从 ChannelGroup 进行移除
         clients.remove(channel);
     }

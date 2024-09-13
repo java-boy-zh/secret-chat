@@ -25,14 +25,17 @@ public class UserChannelSession {
     // 用于记录用户id和客户端channel长id的关联关系
     private static Map<String, String> userChannelIdRelation = new HashMap<>();
 
+    // 存储用户和会话id
     public static void putUserChannelIdRelation(String channelId, String userId) {
         userChannelIdRelation.put(channelId, userId);
     }
 
+    // 利用会话Id获取用户Id
     public static String getUserIdByChannelId(String channelId) {
         return userChannelIdRelation.get(channelId);
     }
 
+    // 存储用户和多个会话
     public static void putMultiChannels(String userId, Channel channel) {
         List<Channel> multiChannels = getMultiChannels(userId);
         if (CollectionUtils.isEmpty(multiChannels)) {
@@ -40,11 +43,28 @@ public class UserChannelSession {
         }
         multiChannels.add(channel);
     }
+    // 移除多余的会话
+    public static void removeUselessChannels(String userId, String channelId) {
 
+        List<Channel> channels = getMultiChannels(userId);
+        if (CollectionUtils.isEmpty(channels)) {
+            return;
+        }
+
+        for (int i = 0 ; i < channels.size() ; i ++) {
+            Channel tempChannel = channels.get(i);
+            if (tempChannel.id().asLongText().equals(channelId)) {
+                channels.remove(i);
+            }
+        }
+
+        multiSession.put(userId, channels);
+    }
+    // 根据用户ID获取会话
     public static List<Channel> getMultiChannels(String userId) {
         return multiSession.get(userId);
     }
-
+    // 打印用户+会话
     public static void outputMulti() {
 
         System.out.println("++++++++++++++++++");
@@ -60,7 +80,7 @@ public class UserChannelSession {
 
             System.out.println("----------");
         }
-        
+
         System.out.println("++++++++++++++++++");
     }
 }
