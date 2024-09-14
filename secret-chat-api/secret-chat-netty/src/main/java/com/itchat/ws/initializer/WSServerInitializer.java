@@ -1,5 +1,6 @@
 package com.itchat.ws.initializer;
 
+import com.itchat.ws.handler.HeartBeatHandler;
 import com.itchat.ws.handler.WSChatHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -8,6 +9,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * @author 王哲
@@ -39,6 +41,14 @@ public class WSServerInitializer extends ChannelInitializer<SocketChannel> {
 
         /*=============================支持HTTP相关协议的Handler=======================================*/
 
+        /*=============================支持心跳控制的Handler=======================================*/
+
+        // 针对客户端，如果在1分钟没有向服务端发送读写心跳(ALL)，则主动断开连接
+        // 如果是读空闲或者写空间，不做任何处理
+        pipeline.addLast(new IdleStateHandler(10, 20, 30 * 60));
+        pipeline.addLast(new HeartBeatHandler());
+
+        /*=============================持心跳控制的Handler=======================================*/
 
         /*=============================支持WebSocket相关协议的Handler=======================================*/
 
