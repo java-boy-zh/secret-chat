@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName RabbitMQConfig.java
  * @create 2024年09月14日 下午2:50

@@ -9,7 +9,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName RabbitMQConsumer.java
  * @create 2024年09月14日 下午3:11

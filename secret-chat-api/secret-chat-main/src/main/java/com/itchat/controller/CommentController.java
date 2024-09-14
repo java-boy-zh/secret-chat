@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author 王哲
+ * @author 王青玄
  * @Contact 1121586359@qq.com
  * @ClassName CommentController.java
  * @create 2024年09月12日 下午5:49
