@@ -126,4 +126,26 @@ public class FriendshipServiceImpl extends BaseInfoProperties implements Friends
 
         friendshipMapper.delete(deleteWrapper2);
     }
+
+    /**
+     * 判断两个朋友之前的关系是否拉黑
+     *
+     * @param friendId1st
+     * @param friendId2nd
+     * @return
+     */
+    @Override
+    public boolean isBlackEachOther(String friendId1st, String friendId2nd) {
+        LambdaQueryWrapper<Friendship> queryWrapper1 = new LambdaQueryWrapper<>();
+        queryWrapper1.eq(Friendship::getMyId, friendId1st);
+        queryWrapper1.eq(Friendship::getFriendId, friendId2nd);
+        Friendship friendship1 = friendshipMapper.selectOne(queryWrapper1);
+
+        LambdaQueryWrapper<Friendship> queryWrapper2 = new LambdaQueryWrapper<>();
+        queryWrapper2.eq(Friendship::getMyId, friendId2nd);
+        queryWrapper2.eq(Friendship::getFriendId, friendId1st);
+        Friendship friendship2 = friendshipMapper.selectOne(queryWrapper2);
+
+        return friendship1 != null || friendship2 != null;
+    }
 }

@@ -4,8 +4,10 @@ import com.itchat.enums.MessageSendEnum;
 import com.itchat.enums.MsgTypeEnum;
 import com.itchat.netty.ChatMsg;
 import com.itchat.netty.DataContent;
+import com.itchat.result.GraceJSONResult;
 import com.itchat.utils.JsonUtils;
 import com.itchat.utils.LocalDateUtils;
+import com.itchat.utils.OkHttpUtil;
 import com.itchat.ws.session.UserChannelSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -61,6 +63,15 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         // 拿到channelId
         String currentChannelLongId = currentChannel.id().asLongText();
         String currentChannelShortId = currentChannel.id().asShortText();
+
+        // 发送消息前 需要进行黑名单判断
+        GraceJSONResult result = OkHttpUtil
+                .get("http://127.0.0.1:1000/main/friendship/isBlack?friendId1st=" + receiverId
+                + "&friendId2nd=" + senderId);
+        boolean isBlack = (boolean) result.getData();
+        if (isBlack) {
+            return;
+        }
 
         // 判断消息类型 根据不同的类型 做不同的处理
         MsgTypeEnum msgTypeEnum = MsgTypeEnum.getByType(msgType);
