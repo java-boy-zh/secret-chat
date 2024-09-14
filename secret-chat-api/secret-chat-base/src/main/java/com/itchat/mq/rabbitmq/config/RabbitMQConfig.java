@@ -22,6 +22,9 @@ public class RabbitMQConfig {
     // 定义队列
     public static final String QUEUE = "queue";
 
+    // 定义路由键
+    public static final String ROUTING_KEY = "imchat.test";
+
     // 创建交换机
     @Bean(EXCHANGE)
     public Exchange exchange() {
