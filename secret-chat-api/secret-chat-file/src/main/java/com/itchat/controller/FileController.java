@@ -2,6 +2,7 @@ package com.itchat.controller;
 
 import com.itchat.bo.VideoMsgBO;
 import com.itchat.config.MinIOConfig;
+import com.itchat.exceptions.GraceException;
 import com.itchat.feigns.UserInfoServiceFeign;
 import com.itchat.result.GraceJSONResult;
 import com.itchat.result.ResponseStatusEnum;
@@ -254,7 +255,7 @@ public class FileController {
         return GraceJSONResult.ok(imageUrl);
     }
 
-    @PostMapping("uploadChatVideo")
+    @PostMapping("/uploadChatVideo")
     public GraceJSONResult uploadChatVideo(@RequestParam("file") MultipartFile file,
                                            String userId) throws Exception {
 
@@ -323,6 +324,42 @@ public class FileController {
         FileUtils.delete(coverFile);
 
         return GraceJSONResult.ok(videoMsgBO);
+    }
+
+    @PostMapping("/uploadChatVoice")
+    public GraceJSONResult uploadChatVoice(@RequestParam("file") MultipartFile file,
+                                           String userId) throws Exception {
+        String voiceUrl = uploadForChatFiles(file, userId, "voice");
+        return GraceJSONResult.ok(voiceUrl);
+    }
+
+    private String uploadForChatFiles(MultipartFile file,
+                                      String userId,
+                                      String fileType) throws Exception {
+
+        if (StringUtils.isBlank(userId)) {
+            GraceException.display(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            GraceException.display(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+
+        filename = "chat"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + "voice"
+                + MinIOUtils.SEPARATOR
+                + FileUtils.dealWithoutFilename(filename);
+
+        String fileUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+
+        return fileUrl;
     }
 
 }

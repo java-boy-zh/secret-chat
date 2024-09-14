@@ -71,8 +71,8 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
             }
 
-            // 文字表情消息, 图片消息, 视频消息
-            case WORDS, IMAGE, VIDEO -> {
+            // 文字表情消息, 图片消息, 视频消息, 音频消息
+            case WORDS, IMAGE, VIDEO, VOICE -> {
                 // 获取所有接收者的Channel集合
                 List<Channel> receiverMultiChannels = UserChannelSession.getMultiChannels(receiverId);
                 if (CollectionUtils.isEmpty(receiverMultiChannels)) {
