@@ -23,3 +23,9 @@ spring:
         server-addr: localhost:8848
 #        username: nacos
 #        password: nacos
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: root
+    password: 12345678
+    virtual-host: imchat

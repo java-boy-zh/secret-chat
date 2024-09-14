@@ -1,5 +1,10 @@
 package com.itchat.controller;
 
+import com.itchat.mq.rabbitmq.config.RabbitMQConfig;
+import com.itchat.netty.ChatMsg;
+import com.itchat.utils.JsonUtils;
+import jakarta.annotation.Resource;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +21,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/index")
 public class TestController {
 
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
     @GetMapping
     public String index() {
         return "main-index";
+    }
+
+    @GetMapping("/mq")
+    public String mq() {
+        ChatMsg chatMsg = new ChatMsg();
+        chatMsg.setMsg("hello world~~~");
+        String msg = JsonUtils.objectToJson(chatMsg);
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE,
+                "imchat.test",
+                msg
+        );
+        return "mq";
     }
 
 }
