@@ -100,6 +100,12 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
             ChannelId receiverChannelId = receiverMultiChannel.id();
             Channel channel = clients.find(receiverChannelId);
             if (channel != null) {
+                // 先判断是否属于语音发送 需要给前端是否已读标志
+                Integer msgType = chatMsg.getMsgType();
+                if (msgType == MsgTypeEnum.VOICE.type) {
+                    chatMsg.setIsRead(false);
+                }
+
                 // 组装消息 发送出去
                 dataContent.setChatMsg(chatMsg);
 
