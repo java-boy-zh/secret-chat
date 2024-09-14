@@ -130,7 +130,7 @@ public class FileController {
 
     @PostMapping("/uploadFriendCircleBg")
     public GraceJSONResult uploadFriendCircleBg(@RequestParam("file") MultipartFile file,
-                                        String userId) throws Exception {
+                                                String userId) throws Exception {
 
         if (StringUtils.isBlank(userId)) {
             return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
@@ -161,7 +161,7 @@ public class FileController {
 
     @PostMapping("/uploadChatBg")
     public GraceJSONResult uploadChatBg(@RequestParam("file") MultipartFile file,
-                                                String userId) throws Exception {
+                                        String userId) throws Exception {
 
         if (StringUtils.isBlank(userId)) {
             return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
@@ -209,6 +209,39 @@ public class FileController {
                 + MinIOUtils.SEPARATOR
                 + FileUtils.dealWithoutFilename(filename);
 
+        String imageUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+
+        return GraceJSONResult.ok(imageUrl);
+    }
+
+    @PostMapping("/uploadChatPhoto")
+    public GraceJSONResult uploadChatPhoto(@RequestParam("file") MultipartFile file,
+                                           String userId,
+                                           HttpServletRequest request) throws Exception {
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 拿到上传文件的后缀
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 上传的头像地址
+        // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
+        int index = filename.lastIndexOf(".");
+        String suffixName = filename.substring(index);
+        filename = "chat"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + "photo"
+                + MinIOUtils.SEPARATOR
+                + FileUtils.dealWithoutFilename(filename);
+
+        // 上传到Minio
         String imageUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
                 filename,
                 file.getInputStream(),
