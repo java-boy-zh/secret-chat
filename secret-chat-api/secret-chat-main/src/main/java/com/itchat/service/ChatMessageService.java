@@ -1,6 +1,7 @@
 package com.itchat.service;
 
 import com.itchat.netty.ChatMsg;
+import com.itchat.utils.PagedGridResult;
 
 /**
  * <p>
@@ -17,4 +18,21 @@ public interface ChatMessageService {
      * @param chatMsg
      */
     void saveMessage(ChatMsg chatMsg);
+
+    /**
+     * 分页查询消息内容
+     * @param senderId
+     * @param receiverId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    PagedGridResult queryChatMsgList(String senderId, String receiverId, Integer page, Integer pageSize);
+
+    /**
+     * 签收消息
+     * @param msgId
+     */
+    void updateMsgSignRead(String msgId);
+
 }
