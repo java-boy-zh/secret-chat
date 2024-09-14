@@ -350,7 +350,7 @@ public class FileController {
                 + MinIOUtils.SEPARATOR
                 + userId
                 + MinIOUtils.SEPARATOR
-                + "voice"
+                + fileType
                 + MinIOUtils.SEPARATOR
                 + FileUtils.dealWithoutFilename(filename);
 
