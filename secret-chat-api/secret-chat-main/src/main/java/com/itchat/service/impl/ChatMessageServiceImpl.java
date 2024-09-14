@@ -1,8 +1,14 @@
 package com.itchat.service.impl;
 
 import com.itchat.common.BaseInfoProperties;
+import com.itchat.mapper.ChatMessageMapper;
+import com.itchat.netty.ChatMsg;
+import com.itchat.pojo.ChatMessage;
 import com.itchat.service.ChatMessageService;
+import com.itchat.utils.CopyBeanUtils;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -14,5 +20,21 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ChatMessageServiceImpl extends BaseInfoProperties implements ChatMessageService {
+    @Resource
+    private ChatMessageMapper chatMessageMapper;
 
+    /**
+     * 存储消息
+     *
+     * @param chatMsg
+     */
+    @Override
+    @Transactional
+    public void saveMessage(ChatMsg chatMsg) {
+        ChatMessage chatMessage = CopyBeanUtils.copy(chatMsg, ChatMessage.class);
+        // 手动设置聊天消息的主键ID
+        chatMessage.setId(chatMsg.getMsgId());
+
+        chatMessageMapper.insert(chatMessage);
+    }
 }

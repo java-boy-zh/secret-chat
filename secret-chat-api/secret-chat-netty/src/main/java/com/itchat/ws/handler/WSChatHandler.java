@@ -1,7 +1,10 @@
 package com.itchat.ws.handler;
 
+import com.a3test.component.idworker.IdWorkerConfigBean;
+import com.a3test.component.idworker.Snowflake;
 import com.itchat.enums.MessageSendEnum;
 import com.itchat.enums.MsgTypeEnum;
+import com.itchat.mq.rabbitmq.MessagePublisher;
 import com.itchat.netty.ChatMsg;
 import com.itchat.netty.DataContent;
 import com.itchat.result.GraceJSONResult;
@@ -67,7 +70,7 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         // 发送消息前 需要进行黑名单判断
         GraceJSONResult result = OkHttpUtil
                 .get("http://127.0.0.1:1000/main/friendship/isBlack?friendId1st=" + receiverId
-                + "&friendId2nd=" + senderId);
+                        + "&friendId2nd=" + senderId);
         boolean isBlack = (boolean) result.getData();
         if (isBlack) {
             return;
@@ -85,6 +88,13 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
             // 文字表情消息, 图片消息, 视频消息, 音频消息
             case WORDS, IMAGE, VIDEO, VOICE -> {
+                // 此处为mq异步解耦，保存信息到数据库，数据库无法获得信息的主键id，
+                // 所以此处可以用snowflake直接生成唯一的主键id
+                Snowflake snowflake = new Snowflake(new IdWorkerConfigBean());
+                String sid = snowflake.nextId();
+
+                chatMsg.setMsgId(sid);
+
                 // 获取所有接收者的Channel集合
                 List<Channel> receiverMultiChannels = UserChannelSession.getMultiChannels(receiverId);
                 if (CollectionUtils.isEmpty(receiverMultiChannels)) {
@@ -103,6 +113,9 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         // 将消息同步给自己的其他端设备
         List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
         sendDataContentByChannel(dataContent, chatMsg, myOtherChannels, MessageSendEnum.SEND_TO_ME);
+
+        // 将消息通过MQ的方式 异步 存储到数据库
+        MessagePublisher.sendMsgToSave(chatMsg);
 
         UserChannelSession.outputMulti();
     }

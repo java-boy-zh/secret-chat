@@ -25,6 +25,9 @@ public class RabbitMQConfig {
     // 定义路由键
     public static final String ROUTING_KEY = "imchat.test";
 
+    // 发送信息到消息队列 并保存至数据库的 路由KEY
+    public static final String ROUTING_KEY_MESSAGE_SAVE = "imchat.message.save";
+
     // 创建交换机
     @Bean(EXCHANGE)
     public Exchange exchange() {

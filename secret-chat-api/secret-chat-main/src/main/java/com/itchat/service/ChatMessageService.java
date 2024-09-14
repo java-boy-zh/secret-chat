@@ -1,5 +1,7 @@
 package com.itchat.service;
 
+import com.itchat.netty.ChatMsg;
+
 /**
  * <p>
  * 聊天信息存储表 服务类
@@ -10,4 +12,9 @@ package com.itchat.service;
  */
 public interface ChatMessageService {
 
+    /**
+     * 存储消息
+     * @param chatMsg
+     */
+    void saveMessage(ChatMsg chatMsg);
 }
