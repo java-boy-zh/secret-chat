@@ -1,5 +1,6 @@
 package com.itchat.ws.handler;
 
+import com.itchat.enums.MessageSendEnum;
 import com.itchat.enums.MsgTypeEnum;
 import com.itchat.netty.ChatMsg;
 import com.itchat.netty.DataContent;
@@ -83,26 +84,31 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 } else {
                     chatMsg.setIsReceiverOnLine(true);
 
-                    sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels);
+                    sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels, MessageSendEnum.SEND_TO_FRIEND);
                 }
             }
         }
-
+        // 1 对自己发送 2 对朋友发送
         // 将消息同步给自己的其他端设备
         List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
-        sendDataContentByChannel(dataContent, chatMsg, myOtherChannels);
+        sendDataContentByChannel(dataContent, chatMsg, myOtherChannels, MessageSendEnum.SEND_TO_ME);
 
         UserChannelSession.outputMulti();
     }
 
-    private void sendDataContentByChannel(DataContent dataContent, ChatMsg chatMsg, List<Channel> receiverMultiChannels) {
+    private void sendDataContentByChannel(DataContent dataContent,
+                                          ChatMsg chatMsg,
+                                          List<Channel> receiverMultiChannels,
+                                          MessageSendEnum messageSendEnum) {
         for (Channel receiverMultiChannel : receiverMultiChannels) {
             ChannelId receiverChannelId = receiverMultiChannel.id();
             Channel channel = clients.find(receiverChannelId);
             if (channel != null) {
                 // 先判断是否属于语音发送 需要给前端是否已读标志
                 Integer msgType = chatMsg.getMsgType();
-                if (msgType == MsgTypeEnum.VOICE.type) {
+                if (msgType == MsgTypeEnum.VOICE.type
+                        &&
+                        messageSendEnum.type == MessageSendEnum.SEND_TO_FRIEND.type) {
                     chatMsg.setIsRead(false);
                 }
 
