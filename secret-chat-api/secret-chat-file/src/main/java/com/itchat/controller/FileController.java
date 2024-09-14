@@ -1,9 +1,11 @@
 package com.itchat.controller;
 
+import com.itchat.bo.VideoMsgBO;
 import com.itchat.config.MinIOConfig;
 import com.itchat.feigns.UserInfoServiceFeign;
 import com.itchat.result.GraceJSONResult;
 import com.itchat.result.ResponseStatusEnum;
+import com.itchat.utils.JcodecVideoUtil;
 import com.itchat.utils.JsonUtils;
 import com.itchat.utils.MinIOUtils;
 import com.itchat.utils.QrCodeUtils;
@@ -18,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author 王青玄
@@ -248,6 +252,77 @@ public class FileController {
                 true);
 
         return GraceJSONResult.ok(imageUrl);
+    }
+
+    @PostMapping("uploadChatVideo")
+    public GraceJSONResult uploadChatVideo(@RequestParam("file") MultipartFile file,
+                                           String userId) throws Exception {
+
+        if (StringUtils.isBlank(userId)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 拿到上传文件的后缀
+        String filename = file.getOriginalFilename();   // 获得文件原始名称
+        if (StringUtils.isBlank(filename)) {
+            return GraceJSONResult.errorCustom(ResponseStatusEnum.FILE_UPLOAD_FAILD);
+        }
+        // 上传的头像地址
+        // 防止占用空间 每个用户上传的头像必须名称为userId.后缀
+        int index = filename.lastIndexOf(".");
+        String suffixName = filename.substring(index);
+        filename = "chat"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + "video"
+                + MinIOUtils.SEPARATOR
+                + FileUtils.dealWithoutFilename(filename);
+
+        // 上传到Minio
+        String videoUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                file.getInputStream(),
+                true);
+
+        // 获取视频的帧截图
+        // 视频封面的名称
+        String coverName = UUID.randomUUID().toString() + ".jpg";
+        String coverPath = JcodecVideoUtil.videoFramesPath
+                + File.separator + "videos"
+                + File.separator + coverName;
+
+        File coverFile = new File(coverPath);
+        if (!coverFile.getParentFile().exists()) {
+            coverFile.getParentFile().mkdirs();
+        }
+
+        // 视频处理
+        JcodecVideoUtil.fetchFrame(file, coverFile);
+
+        // 将帧截图上传到Minio
+        // 构建Minio存储路径
+        filename = "chat"
+                + MinIOUtils.SEPARATOR
+                + userId
+                + MinIOUtils.SEPARATOR
+                + "video"
+                + MinIOUtils.SEPARATOR
+                + "frame"
+                + MinIOUtils.SEPARATOR
+                + coverName;
+        String coverUrl = MinIOUtils.uploadFile(minIOConfig.getBucketName(),
+                filename,
+                new FileInputStream(coverFile),
+                true);
+
+        VideoMsgBO videoMsgBO = new VideoMsgBO();
+        videoMsgBO.setVideoPath(videoUrl);
+        videoMsgBO.setCover(coverUrl);
+
+        // 删除帧截图的本地缓存
+        FileUtils.delete(coverFile);
+
+        return GraceJSONResult.ok(videoMsgBO);
     }
 
 }

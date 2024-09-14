@@ -71,8 +71,8 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
             }
 
-            // 文字表情消息, 图片消息
-            case WORDS, IMAGE -> {
+            // 文字表情消息, 图片消息, 视频消息
+            case WORDS, IMAGE, VIDEO -> {
                 // 获取所有接收者的Channel集合
                 List<Channel> receiverMultiChannels = UserChannelSession.getMultiChannels(receiverId);
                 if (CollectionUtils.isEmpty(receiverMultiChannels)) {
@@ -80,7 +80,7 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                     // 消息不需要发送，后续可以存储到数据库
                     chatMsg.setIsReceiverOnLine(false);
 
-                }else {
+                } else {
                     chatMsg.setIsReceiverOnLine(true);
 
                     sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels);
@@ -103,7 +103,7 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 // 组装消息 发送出去
                 dataContent.setChatMsg(chatMsg);
 
-                String chatTime = LocalDateUtils.format(chatMsg.getChatTime(),LocalDateUtils.DATETIME_PATTERN_2);
+                String chatTime = LocalDateUtils.format(chatMsg.getChatTime(), LocalDateUtils.DATETIME_PATTERN_2);
                 dataContent.setChatTime(chatTime);
 
                 channel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
