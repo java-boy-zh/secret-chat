@@ -107,15 +107,15 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
                     sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels, MessageSendEnum.SEND_TO_FRIEND);
                 }
+
+                // 将消息通过MQ的方式 异步 存储到数据库
+                MessagePublisher.sendMsgToSave(chatMsg);
             }
         }
         // 1 对自己发送 2 对朋友发送
         // 将消息同步给自己的其他端设备
         List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
         sendDataContentByChannel(dataContent, chatMsg, myOtherChannels, MessageSendEnum.SEND_TO_ME);
-
-        // 将消息通过MQ的方式 异步 存储到数据库
-        MessagePublisher.sendMsgToSave(chatMsg);
 
         UserChannelSession.outputMulti();
     }
