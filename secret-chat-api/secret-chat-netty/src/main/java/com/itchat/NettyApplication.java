@@ -1,5 +1,6 @@
 package com.itchat;
 
+import com.itchat.mq.rabbitmq.RabbitMQConnectUtils;
 import com.itchat.utils.JedisPoolUtils;
 import com.itchat.utils.ZookeeperRegister;
 import com.itchat.ws.initializer.WSServerInitializer;
@@ -40,6 +41,11 @@ public class NettyApplication {
                 ZookeeperRegister.getLocalIp(),
                 nettyPort
         );
+
+        // 0.2) 启动消费者进行监听，队列可以根据动态生成的端口号进行拼接
+        String queueName = "netty_queue_" + nettyPort;
+        RabbitMQConnectUtils mqConnect = new RabbitMQConnectUtils();
+        mqConnect.listener("fanout_exchange", queueName);
 
         // 1) 创建主从线程组
         // 1.创建主线程组，负责接收客户端链接但不负责处理
