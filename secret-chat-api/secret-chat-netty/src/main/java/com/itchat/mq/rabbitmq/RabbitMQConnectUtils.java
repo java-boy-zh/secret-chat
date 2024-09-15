@@ -1,5 +1,8 @@
 package com.itchat.mq.rabbitmq;
 
+import com.itchat.netty.DataContent;
+import com.itchat.utils.JsonUtils;
+import com.itchat.ws.session.UserChannelSession;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -153,7 +156,21 @@ public class RabbitMQConnectUtils {
                     if (exchangeName.equalsIgnoreCase(exchange)) {
                         String msg = new String(body);
 
-                        System.out.println("msg = " + msg);
+                        DataContent dataContent = JsonUtils.jsonToPojo(msg, DataContent.class);
+                        String senderId = dataContent.getChatMsg().getSenderId();
+                        String receiverId = dataContent.getChatMsg().getReceiverId();
+
+                        // 广播至集群的其他节点并且发送给用户聊天信息
+                        List<io.netty.channel.Channel> receiverChannels =
+                                UserChannelSession.getMultiChannels(receiverId);
+                        UserChannelSession.sendToTarget(receiverChannels, dataContent);
+
+                        // 广播至集群的其他节点并且同步给自己其他设备聊天信息
+                        String currentChannelId = dataContent.getExtend();
+                        List<io.netty.channel.Channel> senderChannels =
+                                UserChannelSession.getMyOtherChannels(senderId, currentChannelId);
+                        UserChannelSession.sendToTarget(senderChannels, dataContent);
+
                     }
                 }
             };

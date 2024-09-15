@@ -136,8 +136,8 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         }
         // 1 对自己发送 2 对朋友发送
         // 将消息同步给自己的其他端设备
-        List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
-        sendDataContentByChannel(dataContent, chatMsg, myOtherChannels, MessageSendEnum.SEND_TO_ME);
+//        List<Channel> myOtherChannels = UserChannelSession.getMyOtherChannels(senderId, currentChannelLongId);
+//        sendDataContentByChannel(dataContent, chatMsg, myOtherChannels, MessageSendEnum.SEND_TO_ME);
 
         UserChannelSession.outputMulti();
     }
