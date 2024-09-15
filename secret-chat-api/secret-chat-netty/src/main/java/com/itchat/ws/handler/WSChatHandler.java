@@ -126,6 +126,8 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
                 String chatTime = LocalDateUtils.format(chatMsg.getChatTime(), LocalDateUtils.DATETIME_PATTERN_2);
                 dataContent.setChatTime(chatTime);
+                // 拓展字段存入 信道ID
+                dataContent.setExtend(currentChannelLongId);
 
                 // 将聊天消息 使用 MQ 进行广播
                 MessagePublisher.sendMsgToNettyServers(JsonUtils.objectToJson(dataContent));
