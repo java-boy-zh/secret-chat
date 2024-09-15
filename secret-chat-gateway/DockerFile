@@ -1,0 +1,14 @@
+# 使用jdk版本
+FROM openjdk:17
+# 端口号
+EXPOSE 1000
+# 创建者
+MAINTAINER wangzh
+# 磁盘映射
+VOLUME /mydata
+# 名称
+COPY ./secret-chat-gateway-1.0-SNAPSHOT.jar ./secret-chat-gateway.jar
+# 运行
+ENTRYPOINT ["java","-jar","-Xms128m","-Xmx256m","secret-chat-gateway.jar"]
+
+# docker build -f DockerFile -t wangzh/secret-chat-gateway.jar:v1.0 .
