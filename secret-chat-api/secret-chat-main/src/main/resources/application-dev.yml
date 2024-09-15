@@ -29,3 +29,20 @@ spring:
     username: root
     password: 12345678
     virtual-host: imchat
+
+
+zookeeper:
+  curator:
+    #    host: 192.168.1.121:2181,192.168.1.122:2181,192.168.1.123:2181
+    # 单机/集群的ip:port地址
+    host: 127.0.0.1:2181
+    # 连接超时时间
+    connectionTimeoutMs: 30000
+    # 会话超时时间
+    sessionTimeoutMs: 3000
+    # 每次重试的间隔时间
+    sleepMsBetweenRetry: 2000
+    # 最大重试次数
+    maxRetries: 3
+    # 命名空间（root根节点名称）
+    namespace: imchat
