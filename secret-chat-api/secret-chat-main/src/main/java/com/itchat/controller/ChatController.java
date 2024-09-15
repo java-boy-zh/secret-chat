@@ -1,17 +1,20 @@
 package com.itchat.controller;
 
 import com.itchat.common.BaseInfoProperties;
+import com.itchat.netty.NettyServerNode;
 import com.itchat.result.GraceJSONResult;
 import com.itchat.service.ChatMessageService;
+import com.itchat.utils.JsonUtils;
 import com.itchat.utils.PagedGridResult;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 王哲
@@ -27,6 +30,8 @@ import java.util.Map;
 public class ChatController extends BaseInfoProperties {
     @Resource
     private ChatMessageService chatMessageService;
+    @Resource(name = "curatorClient")
+    private CuratorFramework zkClient;
 
     @PostMapping("/getMyUnReadCounts")
     public GraceJSONResult getMyUnReadCounts(String myId) {
@@ -61,6 +66,33 @@ public class ChatController extends BaseInfoProperties {
     public GraceJSONResult signRead(@PathVariable("msgId") String msgId) {
         chatMessageService.updateMsgSignRead(msgId);
         return GraceJSONResult.ok();
+    }
+
+    @PostMapping("/getNettyOnlineInfo")
+    public GraceJSONResult getNettyOnlineInfo() throws Exception {
+        // 从zookeeper中获取当前已注册的Netty服务列表
+        String path = "/server-list";
+        List<String> nettyServerList = zkClient.getChildren().forPath(path);
+
+        // 获取服务列表中的数据
+        List<NettyServerNode> nettyServerNodeList = new ArrayList<>();
+        for (String node : nettyServerList) {
+            String nodeValue = new String(zkClient.getData().forPath(path + "/" + node));
+
+            NettyServerNode nettyServerNode = JsonUtils.jsonToPojo(nodeValue, NettyServerNode.class);
+            nettyServerNodeList.add(nettyServerNode);
+        }
+
+        // 获得哪个zk链接人数最少
+        Optional<NettyServerNode> minNodeOptional = nettyServerNodeList.stream()
+                .min(
+                        Comparator.comparing(
+                                nettyServerNode -> nettyServerNode.getOnlineCounts()
+                        )
+                );
+        NettyServerNode minNode = minNodeOptional.get();
+
+        return GraceJSONResult.ok(minNode);
     }
 
 }
