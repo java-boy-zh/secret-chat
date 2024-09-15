@@ -152,6 +152,8 @@ public class RabbitMQConnectUtils {
                     String exchange = envelope.getExchange();
                     if (exchangeName.equalsIgnoreCase(exchange)) {
                         String msg = new String(body);
+
+                        System.out.println("msg = " + msg);
                     }
                 }
             };

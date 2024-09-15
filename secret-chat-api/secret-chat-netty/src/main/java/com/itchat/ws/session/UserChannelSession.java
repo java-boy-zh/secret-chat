@@ -1,6 +1,11 @@
 package com.itchat.ws.session;
 
+import com.itchat.netty.DataContent;
+import com.itchat.utils.JsonUtils;
+import com.itchat.ws.handler.WSChatHandler;
 import io.netty.channel.Channel;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -105,5 +110,52 @@ public class UserChannelSession {
         }
 
         System.out.println("++++++++++++++++++");
+    }
+
+    /**
+     * 发送给朋友
+     * @param receiverChannels
+     * @param dataContent
+     */
+    public static void sendToTarget(List<Channel> receiverChannels, DataContent dataContent) {
+
+        ChannelGroup clients = WSChatHandler.clients;
+
+        if (receiverChannels == null) {
+            return;
+        }
+
+        for (Channel c : receiverChannels) {
+            Channel findChannel = clients.find(c.id());
+            if (findChannel != null) {
+                findChannel.writeAndFlush(
+                        new TextWebSocketFrame(
+                                JsonUtils.objectToJson(dataContent)));
+            }
+
+        }
+    }
+
+    /**
+     * 发送给自己的其他账号
+     * @param myOtherChannels
+     * @param dataContent
+     */
+    public static void sendToMyOthers(List<Channel> myOtherChannels, DataContent dataContent) {
+
+        ChannelGroup clients = WSChatHandler.clients;
+
+        if (myOtherChannels == null) {
+            return;
+        }
+
+        for (Channel c : myOtherChannels) {
+            Channel findChannel = clients.find(c.id());
+            if (findChannel != null) {
+                findChannel.writeAndFlush(
+                        new TextWebSocketFrame(
+                                JsonUtils.objectToJson(dataContent)));
+            }
+        }
     }
 }

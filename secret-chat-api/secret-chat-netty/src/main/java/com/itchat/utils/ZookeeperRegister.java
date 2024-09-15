@@ -86,7 +86,7 @@ public class ZookeeperRegister {
 
         // 使用分布式锁
         InterProcessReadWriteLock interProcessReadWriteLock =
-                new InterProcessReadWriteLock(zkClient, "zk-netty-lock");
+                new InterProcessReadWriteLock(zkClient, "/zk-netty-lock");
 
         try {
             // 写锁

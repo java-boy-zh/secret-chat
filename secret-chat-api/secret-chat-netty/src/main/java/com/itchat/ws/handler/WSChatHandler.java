@@ -40,7 +40,7 @@ import java.util.List;
 public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     // 用于记录和管理所有的channel
-    private static ChannelGroup clients =
+    public static ChannelGroup clients =
             new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Override
@@ -113,8 +113,22 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 } else {
                     chatMsg.setIsReceiverOnLine(true);
 
-                    sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels, MessageSendEnum.SEND_TO_FRIEND);
+//                    sendDataContentByChannel(dataContent, chatMsg, receiverMultiChannels, MessageSendEnum.SEND_TO_FRIEND);
                 }
+
+                // 先判断是否属于语音发送 需要给前端是否已读标志
+                if (chatMsg.getMsgType() == MsgTypeEnum.VOICE.type) {
+                    chatMsg.setIsRead(false);
+                }
+
+                // 组装消息 发送出去
+                dataContent.setChatMsg(chatMsg);
+
+                String chatTime = LocalDateUtils.format(chatMsg.getChatTime(), LocalDateUtils.DATETIME_PATTERN_2);
+                dataContent.setChatTime(chatTime);
+
+                // 将聊天消息 使用 MQ 进行广播
+                MessagePublisher.sendMsgToNettyServers(JsonUtils.objectToJson(dataContent));
 
                 // 将消息通过MQ的方式 异步 存储到数据库
                 MessagePublisher.sendMsgToSave(chatMsg);
@@ -132,6 +146,9 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                                           ChatMsg chatMsg,
                                           List<Channel> receiverMultiChannels,
                                           MessageSendEnum messageSendEnum) {
+
+        if (CollectionUtils.isEmpty(receiverMultiChannels)) return;
+
         for (Channel receiverMultiChannel : receiverMultiChannels) {
             ChannelId receiverChannelId = receiverMultiChannel.id();
             Channel channel = clients.find(receiverChannelId);

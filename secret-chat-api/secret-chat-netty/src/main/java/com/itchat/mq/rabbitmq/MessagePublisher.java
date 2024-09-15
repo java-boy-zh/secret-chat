@@ -7,6 +7,7 @@ public class MessagePublisher {
 
     // 定义交换机
     public static final String EXCHANGE = "exchange";
+    public static final String FANOUT_EXCHANGE = "fanout_exchange";
 
     // 定义队列
     public static final String QUEUE = "queue";
@@ -19,5 +20,11 @@ public class MessagePublisher {
         connectUtils.sendMsg(JsonUtils.objectToJson(msg),
                 EXCHANGE,
                 ROUTING_KEY_MESSAGE_SAVE);
+    }
+
+    // 广播
+    public static void sendMsgToNettyServers(String msg) throws Exception {
+        RabbitMQConnectUtils connectUtils = new RabbitMQConnectUtils();
+        connectUtils.sendMsg(msg, FANOUT_EXCHANGE, "");
     }
 }
