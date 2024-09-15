@@ -198,3 +198,23 @@ http://localhost:15672/
 默认用户名密码为：guest guest
 ```
 
+### **容器化安装Zookeeper**
+
+```sh
+docker pull zookeeper:3.9.2
+```
+
+```sh
+docker run --name zookeeper \
+-p 2181:2181 \
+--restart always \
+-v /E:/IMchat/Docker/zookeeper/data:/data \
+-v /E:/IMchat/Docker/zookeeper/conf:/conf \
+-v /E:/IMchat/Docker/zookeeper/logs:/datalog \
+-d zookeeper:3.9.2
+```
+
+```win
+docker run --name zookeeper -p 2181:2181 --restart always -v E:/IMchat/Docker/zookeeper/data:/data -v E:/IMchat/Docker/zookeeper/conf:/conf -v E:/IMchat/Docker/zookeeper/logs:/datalog -d zookeeper:3.9.2
+```
+
