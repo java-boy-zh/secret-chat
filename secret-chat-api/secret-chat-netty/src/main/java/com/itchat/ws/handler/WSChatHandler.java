@@ -7,10 +7,9 @@ import com.itchat.enums.MsgTypeEnum;
 import com.itchat.mq.rabbitmq.MessagePublisher;
 import com.itchat.netty.ChatMsg;
 import com.itchat.netty.DataContent;
+import com.itchat.netty.NettyServerNode;
 import com.itchat.result.GraceJSONResult;
-import com.itchat.utils.JsonUtils;
-import com.itchat.utils.LocalDateUtils;
-import com.itchat.utils.OkHttpUtil;
+import com.itchat.utils.*;
 import com.itchat.ws.session.UserChannelSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,6 +21,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
+import redis.clients.jedis.Jedis;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -84,6 +84,14 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
             case CONNECT_INIT -> {
                 UserChannelSession.putMultiChannels(senderId, currentChannel);
                 UserChannelSession.putUserChannelIdRelation(senderId, currentChannelLongId);
+
+                NettyServerNode minNode = dataContent.getServerNode();
+                // 初次连接后，该节点下的在线人数累加
+                ZookeeperRegister.incrementOnlineCounts(minNode);
+
+                // 获得ip+端口，在redis中设置关系，以便在前端设备断线后减少在线人数
+                Jedis jedis = JedisPoolUtils.getJedis();
+                jedis.set(senderId, JsonUtils.objectToJson(minNode));
             }
 
             // 文字表情消息, 图片消息, 视频消息, 音频消息
@@ -183,6 +191,13 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
         // 将channel的长id从 ChannelGroup 进行移除
         clients.remove(channel);
+
+        // 离线后需要将zookeeper用户在线人数减一
+        Jedis jedis = JedisPoolUtils.getJedis();
+        NettyServerNode nettyServerNode = JsonUtils.jsonToPojo(jedis.get(userId), NettyServerNode.class);
+        ZookeeperRegister.decrementOnlineCounts(nettyServerNode);
+
+        jedis.del(userId);
     }
 
     /**
@@ -208,5 +223,12 @@ public class WSChatHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
         // 将channel的长id从 ChannelGroup 进行移除
         clients.remove(channel);
+
+        // 离线后需要将zookeeper用户在线人数减一
+        Jedis jedis = JedisPoolUtils.getJedis();
+        NettyServerNode nettyServerNode = JsonUtils.jsonToPojo(jedis.get(userId), NettyServerNode.class);
+        ZookeeperRegister.decrementOnlineCounts(nettyServerNode);
+
+        jedis.del(userId);
     }
 }

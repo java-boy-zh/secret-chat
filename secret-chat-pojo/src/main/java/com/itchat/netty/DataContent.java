@@ -16,6 +16,6 @@ public class DataContent {
 	private String chatTime;		// 格式化后的聊天时间
 	private String extend;			// 扩展字段
 
-	private NettyServerNode nettyServerNode;
+	private NettyServerNode serverNode;
 	
 }

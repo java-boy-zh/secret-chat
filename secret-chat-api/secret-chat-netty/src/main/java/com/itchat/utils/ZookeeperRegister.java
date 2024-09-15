@@ -7,6 +7,8 @@ import org.apache.zookeeper.data.Stat;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * @Auther 王青玄
@@ -50,6 +52,58 @@ public class ZookeeperRegister {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 增加在线人数
+     *
+     * @param serverNode
+     */
+    public static void incrementOnlineCounts(NettyServerNode serverNode) {
+        dealOnlineCounts(serverNode, 1);
+    }
+
+    /**
+     * 减少在线人数
+     *
+     * @param serverNode
+     */
+    public static void decrementOnlineCounts(NettyServerNode serverNode) {
+        dealOnlineCounts(serverNode, -1);
+    }
+
+    /**
+     * 处理在线人数的增减
+     *
+     * @param serverNode
+     * @param counts
+     */
+    public static void dealOnlineCounts(NettyServerNode serverNode,
+                                        Integer counts) {
+        String path = "/server-list";
+        CuratorFramework zkClient = CuratorConfig.getClient();
+
+        try {
+            List<String> nodeList = zkClient.getChildren().forPath(path);
+            for (String node : nodeList) {
+                String nodePath = path + "/" + node;
+                String nodeJson = new String(zkClient.getData().forPath(nodePath));
+
+                NettyServerNode zookeeperNettyServer = JsonUtils.jsonToPojo(nodeJson, NettyServerNode.class);
+
+                if (zookeeperNettyServer.getIp().equals(serverNode.getIp())
+                        &&
+                        (zookeeperNettyServer.getPort().intValue() == serverNode.getPort().intValue())) {
+                    zookeeperNettyServer.setOnlineCounts(zookeeperNettyServer.getOnlineCounts() + counts);
+
+                    // 更新zookeeper中节点数据
+                    zkClient.setData().forPath(nodePath, JsonUtils.objectToJson(zookeeperNettyServer).getBytes(StandardCharsets.UTF_8));
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 
