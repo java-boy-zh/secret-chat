@@ -2,6 +2,7 @@ package com.itchat.utils;
 
 import com.itchat.netty.NettyServerNode;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.locks.InterProcessReadWriteLock;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 
@@ -83,7 +84,14 @@ public class ZookeeperRegister {
         String path = "/server-list";
         CuratorFramework zkClient = CuratorConfig.getClient();
 
+        // 使用分布式锁
+        InterProcessReadWriteLock interProcessReadWriteLock =
+                new InterProcessReadWriteLock(zkClient, "zk-netty-lock");
+
         try {
+            // 写锁
+            interProcessReadWriteLock.writeLock().acquire();
+
             List<String> nodeList = zkClient.getChildren().forPath(path);
             for (String node : nodeList) {
                 String nodePath = path + "/" + node;
@@ -102,7 +110,18 @@ public class ZookeeperRegister {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                interProcessReadWriteLock.writeLock().release();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            // 释放锁
+            try {
+                interProcessReadWriteLock.writeLock().release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
