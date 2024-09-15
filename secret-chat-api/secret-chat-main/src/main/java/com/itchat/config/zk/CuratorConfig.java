@@ -13,6 +13,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,8 @@ public class CuratorConfig extends BaseInfoProperties {
 
     @Resource
     private RedisOperator redisOperator;
+    @Resource
+    private RabbitAdmin rabbitAdmin;
 
     @Bean("curatorClient")
     public CuratorFramework curatorClient() {
@@ -107,6 +110,10 @@ public class CuratorConfig extends BaseInfoProperties {
                                 String portKey = "netty_port";
 
                                 redisOperator.hdel(portKey, oldPort);
+
+                                // 移除残留的消息队列
+                                String queueName = "netty_queue_" + oldPort;
+                                rabbitAdmin.deleteQueue(queueName);
                             }
 
                         }
