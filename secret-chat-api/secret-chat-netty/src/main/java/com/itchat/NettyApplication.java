@@ -1,6 +1,7 @@
 package com.itchat;
 
 import com.itchat.utils.JedisPoolUtils;
+import com.itchat.utils.ZookeeperRegister;
 import com.itchat.ws.initializer.WSServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -32,6 +33,13 @@ public class NettyApplication {
     public static void main(String[] args) {
         // 0) 获取服务启动端口号
         Integer nettyPort = selectPort(nettyDefaultPort);
+
+        // 0.1) 注册当前Netty服务到Zookeeper
+        ZookeeperRegister.registerNettyServer(
+                "server-list",
+                ZookeeperRegister.getLocalIp(),
+                nettyPort
+        );
 
         // 1) 创建主从线程组
         // 1.创建主线程组，负责接收客户端链接但不负责处理
