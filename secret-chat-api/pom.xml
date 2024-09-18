@@ -17,6 +17,7 @@
         <module>secret-chat-file</module>
         <module>secret-chat-base</module>
         <module>secret-chat-netty</module>
+        <module>secret-chat-ai</module>
     </modules>
 
     <dependencies>
