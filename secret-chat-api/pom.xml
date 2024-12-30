@@ -18,6 +18,7 @@
         <module>secret-chat-base</module>
         <module>secret-chat-netty</module>
         <module>secret-chat-ai</module>
+        <module>secret-chat-word</module>
     </modules>
 
     <dependencies>

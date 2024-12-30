@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="secret-chat-main" />
         <module name="secret-chat-base" />
+        <module name="secret-chat-word" />
         <module name="secret-chat-netty" />
         <module name="secret-chat-pojo" />
         <module name="secret-chat-common" />
@@ -30,6 +31,7 @@
       <module name="secret-chat-main" options="-parameters" />
       <module name="secret-chat-netty" options="-parameters" />
       <module name="secret-chat-pojo" options="-parameters" />
+      <module name="secret-chat-word" options="-parameters" />
     </option>
   </component>
 </project>

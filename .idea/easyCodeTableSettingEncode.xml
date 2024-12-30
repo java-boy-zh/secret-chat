@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EasyCodeTableSetting">
+    <option name="tableInfoMap">
+      <map>
+        <entry key="imchat.sensitive_words" value="eyJuYW1lIjoiU2Vuc2l0aXZlV29yZHMiLCJwcmVOYW1lIjoiIiwiY29tbWVudCI6IuaVj+aEn+ivjeihqCIsInRlbXBsYXRlR3JvdXBOYW1lIjoiTXliYXRpc1BsdXMiLCJmdWxsQ29sdW1uIjpbeyJuYW1lIjoiaWQiLCJjb21tZW50IjoiaWQiLCJ0eXBlIjoiamF2YS5sYW5nLkxvbmciLCJjdXN0b20iOmZhbHNlLCJleHQiOiJ7fSJ9LHsibmFtZSI6IndvcmRzIiwiY29tbWVudCI6IuWGheWuuSIsInR5cGUiOiJqYXZhLmxhbmcuU3RyaW5nIiwiY3VzdG9tIjpmYWxzZSwiZXh0Ijoie30ifSx7Im5hbWUiOiJ0eXBlIiwiY29tbWVudCI6IjE96buR5ZCN5Y2VIDI955m95ZCN5Y2VIiwidHlwZSI6ImphdmEubGFuZy5JbnRlZ2VyIiwiY3VzdG9tIjpmYWxzZSwiZXh0Ijoie30ifSx7Im5hbWUiOiJpc0RlbGV0ZWQiLCJjb21tZW50Ijoi5piv5ZCm6KKr5Yig6ZmkIDDkuLrliKDpmaQgMeW3suWIoOmZpCIsInR5cGUiOiJqYXZhLmxhbmcuSW50ZWdlciIsImN1c3RvbSI6ZmFsc2UsImV4dCI6Int9In1dLCJzYXZlUGFja2FnZU5hbWUiOiJjb20uaXRjaGF0Iiwic2F2ZVBhdGgiOiIuL3NlY3JldC1jaGF0LWFwaS9zZWNyZXQtY2hhdC13b3JkL3NyYy9tYWluL2phdmEvY29tL2l0Y2hhdCIsInNhdmVNb2RlbE5hbWUiOiJzZWNyZXQtY2hhdC13b3JkIn0=" />
+      </map>
+    </option>
+  </component>
+</project>
