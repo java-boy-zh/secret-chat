@@ -1,4 +1,6 @@
 server:
+  servlet:
+    context-path: /main
   tomcat:
     uri-encoding: UTF-8
     # 不限制请求体大小
@@ -9,6 +11,14 @@ spring:
     name: secret-chat-main
   profiles:
     active: dev   # dev-开发环境; prod-生产环境; test-测试环境;
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_id
+      update-strategy: not_empty
+    banner: false
+  mapper-locations: classpath*:/mappers/*.xml
 
 # 日志级别
 logging:
