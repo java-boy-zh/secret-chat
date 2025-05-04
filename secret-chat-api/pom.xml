@@ -19,6 +19,7 @@
         <module>secret-chat-netty</module>
         <module>secret-chat-ai</module>
         <module>secret-chat-word</module>
+        <module>secret-chat-wxmp</module>
     </modules>
 
     <dependencies>

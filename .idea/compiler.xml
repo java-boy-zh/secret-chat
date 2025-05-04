@@ -16,6 +16,7 @@
         <module name="secret-chat-file" />
         <module name="secret-chat-gateway" />
         <module name="secret-chat-ai" />
+        <module name="secret-chat-wxmp" />
         <module name="secret-chat-auth" />
       </profile>
     </annotationProcessing>
@@ -32,6 +33,7 @@
       <module name="secret-chat-netty" options="-parameters" />
       <module name="secret-chat-pojo" options="-parameters" />
       <module name="secret-chat-word" options="-parameters" />
+      <module name="secret-chat-wxmp" options="-parameters" />
     </option>
   </component>
 </project>
